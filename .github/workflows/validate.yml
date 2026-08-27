@@ -1,0 +1,36 @@
+name: validate
+
+# Checks only. Nothing here writes to data/ — the corpus changes through a
+# reviewed pull request and no other way (CLAUDE.md rule 7).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install the one dependency
+        run: python -m pip install --quiet -r requirements.txt
+
+      - name: Check the corpus
+        run: python -m scripts.validate
+
+      - name: Prove each validation check still fires
+        run: python -m tests.run_fixtures
+
+      - name: Check the seeder
+        run: python -m tests.run_seed
+
+      - name: Check the survey importer
+        run: python -m tests.run_survey

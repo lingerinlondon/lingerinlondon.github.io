@@ -1,0 +1,4 @@
+# One dependency, so the list stays short enough to read in full.
+# jsonschema validates data/*.geojson against schema/place.schema.json.
+# Everything else — Overpass queries, point-in-polygon, CSV import — is stdlib.
+jsonschema>=4.18
