@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1270, 51.5194] },
+      "properties": {
+        "id": "osm:way/1000005",
+        "name": "Entered once",
+        "why": "The first of two entries sharing one identifier.",
+        "verified": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1275, 51.5190] },
+      "properties": {
+        "id": "osm:way/1000005",
+        "name": "Entered again under the same id",
+        "why": "The second of two entries sharing one identifier.",
+        "verified": false
+      }
+    }
+  ]
+}

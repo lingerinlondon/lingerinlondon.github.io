@@ -1,0 +1,14 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1270, 51.5194] },
+      "properties": {
+        "id": "osm:way/1000007",
+        "name": "A published place with no sentence",
+        "verified": false
+      }
+    }
+  ]
+}

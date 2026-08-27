@@ -1,0 +1,16 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1270, 51.5194] },
+      "properties": {
+        "id": "osm:way/1000003",
+        "name": "A place with a value nobody defined",
+        "time_pressure": "sometimes",
+        "why": "The time_pressure value here is not in the schema.",
+        "verified": false
+      }
+    }
+  ]
+}

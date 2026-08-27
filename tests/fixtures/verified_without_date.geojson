@@ -1,0 +1,15 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1270, 51.5194] },
+      "properties": {
+        "id": "osm:way/1000006",
+        "name": "Claimed as visited, with no date",
+        "why": "Marked verified but carrying no date for when that was true.",
+        "verified": true
+      }
+    }
+  ]
+}

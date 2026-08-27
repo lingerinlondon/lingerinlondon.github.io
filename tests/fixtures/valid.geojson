@@ -1,0 +1,43 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1270, 51.5194] },
+      "properties": {
+        "id": "osm:way/1000001",
+        "name": "A reading room",
+        "payment_to_enter": "none",
+        "payment_to_sit": "none",
+        "time_pressure": "none",
+        "conversation": "discouraged",
+        "activity": "expected",
+        "seating": "fixed",
+        "setting": "indoor",
+        "support_options": ["donation", "shop"],
+        "why": "You can sit here all afternoon without anyone once asking what you are here for.",
+        "verified": true,
+        "verified_date": "2026-08-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-0.1160, 51.5055] },
+      "properties": {
+        "id": "osm:node/1000002",
+        "name": "A riverside foyer",
+        "payment_to_enter": "none",
+        "payment_to_sit": "none",
+        "time_pressure": "none",
+        "conversation": "possible",
+        "activity": "possible",
+        "seating": "movable",
+        "setting": "indoor",
+        "support_options": ["cafe", "membership"],
+        "why": "Movable chairs, nobody minds a laptop, and it stays open late.",
+        "verified": true,
+        "verified_date": "2026-08-21"
+      }
+    }
+  ]
+}

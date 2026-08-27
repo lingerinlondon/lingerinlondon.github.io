@@ -1,0 +1,15 @@
+# Overpass responses, cached so reruns don't hammer a volunteer-run API.
+.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
