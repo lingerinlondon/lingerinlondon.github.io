@@ -1,0 +1,24 @@
+{
+  "version": 0.6,
+  "generator": "fixture, not a real Overpass response",
+  "elements": [
+    { "type": "node", "id": 2000001, "lat": 51.5194, "lon": -0.1270,
+      "tags": { "amenity": "library", "name": "A public library", "fee": "no",
+                "opening_hours": "Mo-Sa 09:00-19:00", "internet_access": "wlan",
+                "wheelchair": "yes", "operator": "A council" } },
+    { "type": "way", "id": 2000002, "center": { "lat": 51.5055, "lon": -0.1160 },
+      "tags": { "tourism": "museum", "name": "A museum asking for a donation",
+                "fee": "donation", "indoor_seating": "yes" } },
+    { "type": "way", "id": 2000003, "center": { "lat": 51.5130, "lon": -0.1400 },
+      "tags": { "leisure": "garden", "name": "A garden square", "access": "yes",
+                "outdoor_seating": "yes" } },
+    { "type": "node", "id": 2000004, "lat": 51.5100, "lon": -0.1300,
+      "tags": { "amenity": "arts_centre", "name": "A ticketed arts centre", "fee": "yes" } },
+    { "type": "node", "id": 2000005, "lat": 51.5150, "lon": -0.1350,
+      "tags": { "amenity": "community_centre" } },
+    { "type": "node", "id": 2000006, "lat": 51.4826, "lon": 0.0098,
+      "tags": { "amenity": "library", "name": "A library in Greenwich", "fee": "no" } },
+    { "type": "relation", "id": 2000007, "center": { "lat": 51.5000, "lon": -0.1500 },
+      "tags": { "amenity": "library", "name": "A library with no fee tag at all" } }
+  ]
+}
