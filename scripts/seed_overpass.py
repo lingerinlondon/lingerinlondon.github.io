@@ -114,7 +114,7 @@ def fetch(query, refresh=False, attempts=4, sleep=time.sleep):
     path = cache_path(query)
     if os.path.exists(path) and not refresh:
         with open(path) as fh:
-            return json.load(fh), path
+            return json.load(fh), 'the cached response in %s' % os.path.relpath(path, ROOT)
     if not os.path.isdir(CACHE_DIR):
         os.makedirs(CACHE_DIR)
 
@@ -130,7 +130,7 @@ def fetch(query, refresh=False, attempts=4, sleep=time.sleep):
                 payload = json.loads(response.read().decode('utf-8'))
             with open(path, 'w') as fh:
                 json.dump(payload, fh)
-            return payload, path
+            return payload, '%s (cached to %s)' % (endpoint, os.path.relpath(path, ROOT))
         except (urllib.error.URLError, urllib.error.HTTPError, ValueError) as exc:
             last_error = exc
             status = getattr(exc, 'code', None)
@@ -264,7 +264,7 @@ def main(argv=None):
             raise SystemExit('No cached response at %s, and --from-cache-only was given.' % path)
         with open(path) as fh:
             payload = json.load(fh)
-        source = path
+        source = os.path.relpath(path, ROOT)
     else:
         payload, source = fetch(query, refresh=args.refresh)
 
