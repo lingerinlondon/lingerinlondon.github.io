@@ -35,10 +35,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PLACES = os.path.join(ROOT, "data", "places.geojson")
 OUT = os.path.join(ROOT, "site", "index.html")
 
-TITLE = "Central London Third Places"
+TITLE = "Linger in London"
 STANDFIRST = (
-    "Places in central London you can turn up to, stay a while, and pay nothing. "
-    "Every one of them has been sat in by someone, or read by someone before it was listed."
+    "A list of places in 'central' London you can spend time in, doing what you want, without time or financial pressure."
+    "Use these places to study, read, do laptop work, take a call, listen to music, play chess, chill with friends, etc."
 )
 
 
@@ -141,8 +141,7 @@ def render(places, gates, chips):
         "<body>",
         "<h1>%s</h1>" % esc(TITLE),
         "<p>%s</p>" % esc(STANDFIRST),
-        "<p>There are no ratings here, no review counts and no ordering by popularity. "
-        "The list is alphabetical, and that is the only order it will ever be in.</p>",
+        "<p>There are no ratings here, no review counts and no ordering by popularity</p>",
     ]
 
     parts.append("<h2>What every place on this list has in common</h2>")
