@@ -13,6 +13,10 @@ artefact they had no way of regenerating. Build it locally to look at it:
 python3 -m scripts.build_site
 ```
 
+Building it also copies `places.geojson`, `boundary.geojson` and the schema
+into `site/`, so a local build is the same thing the deploy publishes, footer
+links included. Those copies are gitignored — they are output, not source.
+
 Everything on it is decided by the schema. Filter chips come from `x-filter` —
 a field with a `chip` becomes one toggle, a field with `values` becomes a group
 of them — so adding a filterable field adds chips without anyone editing

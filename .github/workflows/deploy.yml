@@ -36,18 +36,10 @@ jobs:
       - name: Refuse to publish a corpus that does not validate
         run: python -m scripts.validate
 
+      # Also copies the corpus and the schema into site/, so the published
+      # page and a local build are the same thing.
       - name: Build the list
         run: python -m scripts.build_site
-
-      # The corpus and the schema are published next to the page, so anyone can
-      # take the data without cloning the repo, and so the schema's $id resolves
-      # to the schema. Forkability was the point.
-      - name: Publish the data and the schema alongside it
-        run: |
-          mkdir -p site/data site/schema
-          cp data/places.geojson site/data/
-          cp data/boundary.geojson site/data/
-          cp schema/place.schema.json site/schema/
 
       - uses: actions/configure-pages@v5
 

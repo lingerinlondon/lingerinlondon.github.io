@@ -27,6 +27,7 @@ import argparse
 import html
 import json
 import os
+import shutil
 import sys
 
 from scripts import schema as schema_mod
@@ -34,6 +35,30 @@ from scripts import schema as schema_mod
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PLACES = os.path.join(ROOT, "data", "places.geojson")
 OUT = os.path.join(ROOT, "site", "index.html")
+
+# Published next to the page so anyone can take the data without cloning, and
+# so the schema's $id resolves to the schema. Copied here rather than in the
+# deploy workflow, so that building locally gives you the same site the deploy
+# does, working footer links and all.
+ALONGSIDE = [
+    (os.path.join(ROOT, "data", "places.geojson"), "data"),
+    (os.path.join(ROOT, "data", "boundary.geojson"), "data"),
+    (os.path.join(ROOT, "schema", "place.schema.json"), "schema"),
+]
+
+
+def copy_alongside(site_dir):
+    copied = 0
+    for source, folder in ALONGSIDE:
+        if not os.path.exists(source):
+            continue
+        target_dir = os.path.join(site_dir, folder)
+        if not os.path.isdir(target_dir):
+            os.makedirs(target_dir)
+        shutil.copy(source, target_dir)
+        copied += 1
+    return copied
+
 
 TITLE = "Linger in London"
 STANDFIRST = (
@@ -340,9 +365,11 @@ def main(argv=None):
     page = render(places, schema_mod.gates(), chip_definitions())
     with open(args.out, "w") as fh:
         fh.write(page)
-    print("wrote %s — %d place%s, %d filter chips"
+    copied = copy_alongside(os.path.dirname(os.path.abspath(args.out)))
+    print("wrote %s — %d place%s, %d filter chips, %d file%s published alongside"
           % (os.path.relpath(args.out, ROOT), len(places),
-             "" if len(places) == 1 else "s", len(chip_definitions())))
+             "" if len(places) == 1 else "s", len(chip_definitions()),
+             copied, "" if copied == 1 else "s"))
     return 0
 
 
