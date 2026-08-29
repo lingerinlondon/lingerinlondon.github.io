@@ -6,6 +6,33 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          -0.127507,
+          51.529899
+        ]
+      },
+      "properties": {
+        "id": "osm:way/4680891",
+        "spot": "Main foyer",
+        "name": "British Library",
+        "seating": "fixed",
+        "conversation": "possible",
+        "activity": "expected",
+        "setting": "indoor",
+        "table": "some",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "donation"
+        ],
+        "why": "Bit of buzz in the central foyer with people reading and working, some wandering around exhibits there.",
+        "last_checked": "2025-10-09"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           -0.191799,
           51.501291
         ]
