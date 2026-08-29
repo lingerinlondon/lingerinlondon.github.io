@@ -10,3 +10,7 @@ venv/
 ._*
 .Spotlight-V100
 .Trashes
+
+# Kept locally, not published: working notes and agent instructions.
+CLAUDE.md
+docs/
