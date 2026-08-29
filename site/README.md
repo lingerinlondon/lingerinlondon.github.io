@@ -12,9 +12,10 @@ fifteen seconds rather than after writing a paragraph. It posts nothing
 anywhere: it writes out a message for the contributor to email, which is the
 only way to collect a suggestion with no server involved.
 
-Before the site goes up, set `SUGGESTIONS_EMAIL` in `scripts/build_forms.py`
-and rerun it. It currently holds a placeholder, because putting a real address
-into a public page is a decision to publish it rather than a detail.
+The contact address is a plain `mailto:` in `scripts/build_forms.py`. It is not
+obfuscated, deliberately: that address is already public wherever the apps list
+it, so hiding it here would buy nothing real while making the page odd to read.
+Spam filtering happens at the mail provider, which is where it belongs.
 
 ## What is decided for the list
 

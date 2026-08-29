@@ -58,14 +58,10 @@ def main():
     if not failures:
         print("ok   every descriptive value is offered, and none of them are required")
 
-    # The address must never appear as a readable string in the page source.
-    address = build_forms.suggestions_email()
-    if address in page:
-        failures.append("the contact address is sitting in the page as plain text")
-    elif address == build_forms.EMAIL_PLACEHOLDER:
-        print("note no address set yet — put one in .suggestions-email and rebuild")
+    if build_forms.SUGGESTIONS_EMAIL not in page:
+        failures.append("the email form gives no address to send the message to")
     else:
-        print("ok   the contact address is assembled on request, not written into the page")
+        print("ok   the email form says where to send the message")
 
     if failures:
         print("\n%d form check(s) failed:\n" % len(failures))
