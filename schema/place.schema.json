@@ -2,21 +2,26 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/cormac/central-london-third-places/schema/place.schema.json",
   "title": "Central London Third Places — place properties, v0",
-  "description": "Single source of truth for fields. Both scripts/validate.py and the site's filter UI derive from this file; nothing may hand-maintain a second list of fields elsewhere.",
+  "description": "Single source of truth for fields. The validator, the contribution forms and the site's filters all derive from this file; nothing may hand-maintain a second list of fields elsewhere.",
 
-  "$comment": "PROVISIONAL. This is schema v0, written before the survey (docs/PLAN.md step 1) has happened. It is expected to be wrong. In particular: payment_to_enter and payment_to_sit may well collapse into a single payment field, or split into three (enter / sit / stay beyond an hour) — walking fifty places is what decides that, not discussion. Optimise every change here for cheap replacement over cleverness. Judgement fields carry x-filter metadata so the reading surface can generate its filters from this file alone.",
+  "$comment": "PROVISIONAL, and written before the survey has happened. Four fields are GATES: they describe what a place must be to belong here at all, so their enums are pinned to the passing values and a place that fails one is not a badly-described place, it is a place that belongs somewhere else. The gates are payment_to_enter, payment_to_sit, time_pressure and seating. They are kept as fields rather than dropped so that anyone who downloads this data knows what a row guarantees without reading the README, and so that loosening a gate later is a one-line enum change rather than a re-collection. Everything else is description, and only descriptive fields carry x-filter — filtering on a gate would return the entire corpus.",
 
   "$defs": {
     "common": {
-      "$comment": "Every judgement field below is nullable on purpose. Null means nobody has looked yet, and is a prompt to go and sit there. A guessed value is a lie, and after the fact there is no way to tell one from the other.",
       "type": "object",
       "unevaluatedProperties": false,
       "properties": {
         "id": {
           "type": "string",
-          "description": "OSM element or Overture GERS identifier. Every place is keyed to one so deduplication is a primary-key lookup rather than fuzzy name matching.",
+          "description": "The OSM element the place sits in or on. Unique together with spot, not on its own: one library can hold two entries if they are genuinely different places to sit.",
           "pattern": "^(osm:(node|way|relation)/[0-9]+|gers:[0-9A-Za-z_-]{8,})$",
-          "examples": ["osm:way/123456", "osm:node/98765", "gers:08b2a1072b59bfff0200bcc1ba1b1c2d"]
+          "examples": ["osm:way/123456", "osm:node/98765"]
+        },
+        "spot": {
+          "type": ["string", "null"],
+          "maxLength": 60,
+          "description": "Which part of that element, when the whole of it is not the point — 'top floor, by the window', 'the benches under the canopy'. Null means the place as a whole. This names a location and nothing else: it is not a second why sentence, and it carries no judgement.",
+          "examples": ["top floor, by the window", "the benches under the canopy"]
         },
         "name": {
           "type": "string",
@@ -27,49 +32,55 @@
 
         "payment_to_enter": {
           "type": ["string", "null"],
-          "enum": ["none", "optional", "required", null],
-          "description": "Whether money changes hands to get through the door.",
-          "x-filter": {
-            "chip": "free to enter",
-            "match": "none",
-            "label": "Payment to enter",
-            "values": {
-              "none": "nothing to pay at the door",
-              "optional": "a suggested donation, not enforced",
-              "required": "a ticket or fee is required"
-            }
+          "enum": ["none", "optional", null],
+          "description": "GATE. Nothing may be required to get through the door. A donation box passes: it is an option to support the place, not a price.",
+          "x-gate": {
+            "confirm": "There is nothing you have to pay to get in.",
+            "excluded": "required",
+            "excluded_reason": "This project only lists places you can walk into without paying. A ticket price is not a mark against a place — it just puts it outside what this list is for."
           }
         },
         "payment_to_sit": {
           "type": ["string", "null"],
-          "enum": ["none", "optional", "required", null],
-          "description": "Whether money changes hands to occupy a seat once inside. Distinct from entry: plenty of free-to-enter places still expect a purchase before you sit down.",
-          "x-filter": {
-            "chip": "free to sit",
-            "match": "none",
-            "label": "Payment to sit",
-            "values": {
-              "none": "sit without buying anything",
-              "optional": "a cafe exists, but sitting without buying is accepted",
-              "required": "seating is for customers"
-            }
+          "enum": ["none", "optional", null],
+          "description": "GATE. Nothing may be required to occupy a seat. 'optional' is the case where a cafe exists but sitting without buying is genuinely accepted — rarer than it sounds, and worth being honest about.",
+          "x-gate": {
+            "confirm": "You can sit down without buying anything.",
+            "excluded": "required",
+            "excluded_reason": "If the seating is for customers, the place asks something of you before you can stay, which is the thing this list exists to find the absence of."
           }
         },
         "time_pressure": {
           "type": ["string", "null"],
-          "enum": ["none", "implied", "enforced", null],
-          "description": "Whether staying a long time becomes uncomfortable.",
+          "enum": ["none", null],
+          "description": "GATE, and the strictest one. No stated limit, and nobody moves you on. 'implied' pressure — the feeling that you have been there a while — fails, because staying a while is the entire premise. Loosen by adding 'implied' to this enum if the survey says that is too strict.",
+          "x-gate": {
+            "confirm": "You could stay for hours without anyone minding.",
+            "excluded": "implied, enforced",
+            "excluded_reason": "A place you feel you should leave is not a place you can stay in, even when nobody says so out loud."
+          }
+        },
+        "seating": {
+          "type": ["string", "null"],
+          "enum": ["fixed", "movable", "soft", null],
+          "description": "GATE and description at once. There must be somewhere to sit, so 'none' is not a value here; which kind it is remains useful. Movable matters more than comfortable: it is what lets people form a group.",
+          "x-gate": {
+            "confirm": "There is somewhere to sit down.",
+            "excluded": "nowhere to sit",
+            "excluded_reason": "Somewhere you can only stand is not somewhere you can stay a while, however welcoming it is otherwise."
+          },
           "x-filter": {
-            "chip": "no time pressure",
-            "match": "none",
-            "label": "Time pressure",
+            "chip": "movable seating",
+            "match": "movable",
+            "label": "Seating",
             "values": {
-              "none": "stay as long as you like",
-              "implied": "no rule, but you feel it after a while",
-              "enforced": "a stated time limit, or someone asks"
+              "fixed": "benches or bolted seating",
+              "movable": "chairs you can move",
+              "soft": "sofas or armchairs"
             }
           }
         },
+
         "conversation": {
           "type": ["string", "null"],
           "enum": ["discouraged", "possible", "expected", null],
@@ -97,22 +108,6 @@
               "discouraged": "you are expected to be here for the stated purpose",
               "possible": "nobody minds what you are doing",
               "expected": "the place is set up for it"
-            }
-          }
-        },
-        "seating": {
-          "type": ["string", "null"],
-          "enum": ["fixed", "movable", "soft", "none", null],
-          "description": "The dominant seating type. Movable matters more than comfortable: it is what lets people form a group.",
-          "x-filter": {
-            "chip": "movable seating",
-            "match": "movable",
-            "label": "Seating",
-            "values": {
-              "fixed": "benches or bolted seating",
-              "movable": "chairs you can move",
-              "soft": "sofas or armchairs",
-              "none": "nowhere to sit"
             }
           }
         },
@@ -144,15 +139,15 @@
         },
 
         "why": {
-          "type": ["string", "null"],
+          "type": "string",
           "minLength": 1,
           "maxLength": 200,
-          "description": "One sentence on why this place is here. The only free text in the schema, capped so it stays a sentence rather than a review. Null only on desk-seeded candidates, which nobody has been to yet."
+          "description": "One sentence on why this place is here. The only free text in the schema, capped so it stays a sentence rather than a review."
         },
 
         "verified": {
           "type": "boolean",
-          "description": "True means Cormac has physically sat there. False means desk-seeded from OSM and unvisited. The two must never be silently mixed on the reading surface."
+          "description": "True means Cormac has physically sat there. False means someone suggested it and it has been reviewed, but not yet visited. The two must never be silently mixed on the reading surface."
         },
         "verified_date": {
           "type": ["string", "null"],
@@ -160,14 +155,13 @@
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
           "description": "ISO date the attributes were last checked in person. Decay logic is off, but the date is recorded from day one because retrofitting it later is miserable."
         },
-
-        "osm_tags": {
-          "type": ["object", "null"],
-          "description": "Raw OSM tags kept verbatim from seeding, for provenance and for re-deriving fields when the schema changes. Not displayed, and not a place to smuggle free text into.",
-          "additionalProperties": { "type": "string" }
+        "suggested_by": {
+          "type": ["string", "null"],
+          "maxLength": 60,
+          "description": "How a contributor wishes to be credited, if they want to be. A name or handle, nothing else. Null for places found without a suggestion."
         }
       },
-      "required": ["id", "name", "verified"],
+      "required": ["id", "name", "why", "verified"],
       "if": { "properties": { "verified": { "const": true } }, "required": ["verified"] },
       "then": {
         "$comment": "A verified place without a date is not verified, it is a claim.",
@@ -176,21 +170,7 @@
       }
     },
 
-    "candidate": {
-      "$comment": "Desk-seeded and unvisited. Almost every judgement field is null, and that is correct. Used for data/candidates.geojson.",
-      "$ref": "#/$defs/common"
-    },
-
-    "place": {
-      "$comment": "The published corpus. Everything a candidate must satisfy, plus a human sentence. Used for data/places.geojson.",
-      "allOf": [
-        { "$ref": "#/$defs/common" },
-        {
-          "properties": { "why": { "type": "string", "minLength": 1, "maxLength": 200 } },
-          "required": ["why"]
-        }
-      ]
-    }
+    "place": { "$ref": "#/$defs/common" }
   },
 
   "$ref": "#/$defs/place"

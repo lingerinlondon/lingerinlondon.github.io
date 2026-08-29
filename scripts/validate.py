@@ -3,15 +3,19 @@
 Five checks, in the order a contributor meets them:
 
   1. every feature matches schema/place.schema.json
-  2. every feature sits inside data/boundary.geojson
-  3. no id appears twice
-  4. verified: true always carries a verified_date
-  5. why is present on published places, and stays a sentence
+  2. every feature passes the four eligibility gates
+  3. every feature sits inside data/boundary.geojson
+  4. no id and spot pair appears twice
+  5. why is present and stays a sentence, and verified carries a date
 
-Checks 1, 4 and 5 are expressed in the schema itself, so the schema stays the
-single source of truth; this file's job for those is to turn a JSON Schema
-error into a sentence someone can act on. Checks 2 and 3 are here because they
-are about the corpus as a whole, not about one feature.
+Checks 1, 2 and 5 are expressed in the schema, so the schema stays the single
+source of truth; this file turns a JSON Schema error into a sentence someone
+can act on. Checks 3 and 4 are here because they are about the corpus as a
+whole rather than about one feature.
+
+A gate failure is worded differently from every other error on purpose. It does
+not mean someone described a place badly. It means the place belongs somewhere
+other than this list, and saying so unkindly would be both rude and wrong.
 
 Exit code is 0 if the corpus is clean and 1 if it is not.
 """
@@ -25,22 +29,20 @@ from scripts import geo, schema as schema_mod
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Which file is held to which strictness. Candidates are desk-seeded and have
-# not been visited, so they are not expected to carry a why sentence yet.
-TARGETS = [
-    ("data/places.geojson", "place"),
-    ("data/candidates.geojson", "candidate"),
-]
+TARGETS = ["data/places.geojson"]
 
 FIELD_HINTS = {
     "id": (
-        "Every place is keyed to an OSM element or an Overture GERS id, which is what "
-        "lets us spot the same place twice. Expected something like osm:way/123456 or "
-        "gers:08b2a10... ."
+        "Every place is keyed to the OSM element it sits in or on, which is what gives "
+        "each entry a link a reader can follow. Expected something like osm:way/123456."
+    ),
+    "spot": (
+        "Which part of the element, when the whole of it is not the point — "
+        "'top floor, by the window'. Leave it out for the place as a whole."
     ),
     "verified_date": "Expected a date like 2026-08-27.",
     "why": "One sentence on why this place is here, up to 200 characters.",
-    "verified": "true if someone has sat there, false if it came from a desk search.",
+    "verified": "true if someone has sat there, false if it has been reviewed but not visited.",
 }
 
 
@@ -70,9 +72,12 @@ class Problem(object):
 def label_for(feature, index):
     props = (feature or {}).get("properties") or {}
     name = props.get("name")
+    spot = props.get("spot")
     ident = props.get("id")
+    if name and spot:
+        name = "%s (%s)" % (name, spot)
     if name and ident:
-        return "%s (%s)" % (name, ident)
+        return "%s [%s]" % (name, ident)
     if name:
         return str(name)
     if ident:
@@ -81,23 +86,27 @@ def label_for(feature, index):
 
 
 def _field_of(error):
-    path = list(error.absolute_path)
-    for part in path:
+    for part in error.absolute_path:
         if isinstance(part, str) and part != "properties":
             return part
-    if error.validator == "required":
-        msg = error.message
-        if "'" in msg:
-            return msg.split("'")[1]
-    if error.validator in ("unevaluatedProperties", "additionalProperties"):
+    if error.validator in ("required", "unevaluatedProperties", "additionalProperties"):
         if "'" in error.message:
             return error.message.split("'")[1]
     return None
 
 
-def _plain(error, field):
-    """A JSON Schema error, said plainly."""
+def _plain(error, field, gates):
+    """A JSON Schema error, said plainly. Gate fields get their own wording."""
     v = error.validator
+
+    if v == "enum" and field in gates:
+        gate = gates[field]
+        return (
+            "%s does not pass. %s\n    %s"
+            % (json.dumps(error.instance), gate["reason"], "This is one of the four things a "
+               "place has to be to belong in this list, not a detail to correct.")
+        )
+
     if v == "required":
         if field == "verified_date":
             return (
@@ -105,21 +114,16 @@ def _plain(error, field):
                 "person — without one there is no way to tell how old the answer is."
             )
         if field == "why":
-            return "missing. Every published place needs its one sentence."
+            return "missing. Every place needs its one sentence."
         return "missing."
     if v == "enum":
         allowed = ", ".join(str(x) for x in error.validator_value if x is not None)
         return "%s is not one of: %s" % (json.dumps(error.instance), allowed)
     if v == "maxLength":
-        return "is %d characters. The limit is %d." % (
-            len(error.instance),
-            error.validator_value,
-        )
+        return "is %d characters. The limit is %d." % (len(error.instance), error.validator_value)
     if v == "minLength":
         return "is empty."
     if v in ("pattern", "format"):
-        # Both fire on verified_date; they are one problem to a reader, so they
-        # produce one message and the caller's de-duplication collapses them.
         if field == "verified_date":
             return "%s is not a date." % json.dumps(error.instance)
         return "%s is not the expected shape." % json.dumps(error.instance)
@@ -127,9 +131,7 @@ def _plain(error, field):
         want = error.validator_value
         want = ", ".join(want) if isinstance(want, list) else want
         return "%s should be %s, not %s." % (
-            json.dumps(error.instance),
-            want,
-            type(error.instance).__name__,
+            json.dumps(error.instance), want, type(error.instance).__name__
         )
     if v in ("unevaluatedProperties", "additionalProperties"):
         return (
@@ -141,8 +143,9 @@ def _plain(error, field):
     return error.message
 
 
-def schema_problems(source, features, profile):
-    validator = schema_mod.validator(profile)
+def schema_problems(source, features):
+    validator = schema_mod.validator()
+    gates = {g["field"]: g for g in schema_mod.gates()}
     problems = []
     for i, feature in enumerate(features):
         props = (feature or {}).get("properties") or {}
@@ -150,15 +153,13 @@ def schema_problems(source, features, profile):
         errors = sorted(validator.iter_errors(props), key=lambda e: list(e.absolute_path))
         seen = set()
         for error in errors:
-            # if/then and allOf produce a wrapper error alongside the real one
             if error.context:
                 continue
             field = _field_of(error)
-            message = _plain(error, field)
-            key = (field, message)
-            if key in seen:
+            message = _plain(error, field, gates)
+            if (field, message) in seen:
                 continue
-            seen.add(key)
+            seen.add((field, message))
             problems.append(Problem(source, label, field, message, FIELD_HINTS.get(field)))
     return problems
 
@@ -178,13 +179,11 @@ def boundary_problems(source, features, polygons):
             away = geo.distance_to_boundary_m(polygons, lon, lat)
             problems.append(
                 Problem(
-                    source,
-                    label,
-                    None,
+                    source, label, None,
                     "sits about %s outside the project boundary." % _distance(away),
                     "This project covers central London only, and that scope is in its "
-                    "name on purpose. It is not a judgement on the place — it may well "
-                    "be a good one. data/boundary.geojson is the authoritative outline.",
+                    "name on purpose. It is not a judgement on the place. "
+                    "data/boundary.geojson is the authoritative outline.",
                 )
             )
     return problems
@@ -197,7 +196,11 @@ def _distance(metres):
 
 
 def duplicate_problems(by_source):
-    """One id, one place — across every file, not just within one."""
+    """One id and spot pair, one entry.
+
+    The key is the pair, not the id, because one library can hold two genuinely
+    different places to sit — the top floor by the window is not the ground floor.
+    """
     seen = {}
     problems = []
     for source, features in by_source:
@@ -206,26 +209,23 @@ def duplicate_problems(by_source):
             ident = props.get("id")
             if not isinstance(ident, str) or not ident:
                 continue
+            key = (ident, props.get("spot") or None)
             label = label_for(feature, i)
-            if ident in seen:
-                first_source, first_label = seen[ident]
-                if first_source == source:
-                    detail = "already used by %s in this file." % first_label
-                else:
-                    detail = (
-                        "already used by %s in %s. A candidate that has been visited "
-                        "moves into places.geojson rather than being copied into it."
-                        % (first_label, first_source)
+            if key in seen:
+                problems.append(
+                    Problem(
+                        source, label, "id",
+                        "already used by %s." % seen[key],
+                        "Two entries can share an OSM id as long as they name different "
+                        "spots within it. These two name the same spot, or neither names one.",
                     )
-                problems.append(Problem(source, label, "id", detail))
+                )
             else:
-                seen[ident] = (source, label)
+                seen[key] = label
     return problems
 
 
 def read_features(path):
-    """Return (features, problem). A missing file is not an error: the corpus
-    starts nearly empty and candidates.geojson only exists once seeding runs."""
     if not os.path.exists(path):
         return [], None
     try:
@@ -234,9 +234,7 @@ def read_features(path):
     except ValueError as exc:
         return None, Problem(path, "the file itself", None, "is not valid JSON: %s" % exc)
     if not isinstance(doc, dict) or doc.get("type") != "FeatureCollection":
-        return None, Problem(
-            path, "the file itself", None, "should be a GeoJSON FeatureCollection."
-        )
+        return None, Problem(path, "the file itself", None, "should be a GeoJSON FeatureCollection.")
     features = doc.get("features")
     if not isinstance(features, list):
         return None, Problem(path, "the file itself", None, "has no features list.")
@@ -251,7 +249,7 @@ def run(targets=None, boundary_path=geo.BOUNDARY_PATH):
     by_source = []
     counts = {}
 
-    for rel, profile in targets:
+    for rel in targets:
         path = rel if os.path.isabs(rel) else os.path.join(ROOT, rel)
         features, problem = read_features(path)
         if problem:
@@ -259,7 +257,7 @@ def run(targets=None, boundary_path=geo.BOUNDARY_PATH):
             continue
         counts[rel] = len(features)
         by_source.append((rel, features))
-        problems.extend(schema_problems(rel, features, profile))
+        problems.extend(schema_problems(rel, features))
         problems.extend(boundary_problems(rel, features, polygons))
 
     problems.extend(duplicate_problems(by_source))
@@ -268,29 +266,16 @@ def run(targets=None, boundary_path=geo.BOUNDARY_PATH):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Check the corpus against the schema, the boundary, and itself."
+        description="Check the corpus against the schema, the gates, the boundary, and itself."
     )
-    parser.add_argument(
-        "--file",
-        action="append",
-        metavar="PATH:PROFILE",
-        help="Validate one file under one profile (place or candidate). Repeatable. "
-        "Used by the test fixtures; without it the real data files are checked.",
-    )
+    parser.add_argument("--file", action="append", metavar="PATH",
+                        help="Validate this file instead of the corpus. Repeatable.")
     parser.add_argument("--boundary", default=geo.BOUNDARY_PATH)
-    parser.add_argument("--quiet", action="store_true", help="Say nothing unless something is wrong.")
+    parser.add_argument("--quiet", action="store_true",
+                        help="Say nothing unless something is wrong.")
     args = parser.parse_args(argv)
 
-    targets = None
-    if args.file:
-        targets = []
-        for spec in args.file:
-            path, _, profile = spec.rpartition(":")
-            if not path:
-                path, profile = spec, "place"
-            targets.append((path, profile or "place"))
-
-    problems, counts = run(targets, args.boundary)
+    problems, counts = run(args.file or None, args.boundary)
 
     if problems:
         print("The corpus needs a few things fixed before it can be published.\n")
@@ -303,15 +288,12 @@ def main(argv=None):
                 current = problem.where
             print(problem.detail())
         print("")
-        print(
-            "%d thing%s to fix." % (len(problems), "" if len(problems) == 1 else "s")
-        )
+        print("%d thing%s to fix." % (len(problems), "" if len(problems) == 1 else "s"))
         return 1
 
     if not args.quiet:
         total = sum(counts.values())
-        summary = ", ".join("%s: %d" % (k, v) for k, v in counts.items())
-        print("Corpus is valid. %d feature%s (%s)." % (total, "" if total == 1 else "s", summary))
+        print("Corpus is valid. %d place%s." % (total, "" if total == 1 else "s"))
     return 0
 
 

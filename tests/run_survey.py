@@ -1,7 +1,8 @@
 """Check the survey importer. Run: python -m tests.run_survey
 
-Two things matter: ten hand-written rows round-trip into valid GeoJSON, and
-nothing is ever dropped without saying so.
+Three things matter: ten hand-written rows round-trip into valid GeoJSON,
+nothing is ever dropped without saying so, and a row that fails a gate is told
+its place does not qualify rather than that its spelling is wrong.
 """
 
 import json
@@ -15,17 +16,29 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TEN = os.path.join(HERE, "fixtures", "survey_ten_rows.csv")
 MESSY = os.path.join(HERE, "fixtures", "survey_messy_rows.csv")
 
-# Each messy row breaks one thing, and the report must name it.
 EXPECTED = {
-    2: "time_pressure",
+    2: "is not shorthand this recognises",
     3: "no id",
     4: "no name",
     5: "columns the schema does not define: Mood",
     6: "is not a date this understands",
-    7: "not in data/candidates.geojson",
+    7: "no location",
     8: "crowdfunding",
-    9: "is not a number",
+    9: "does not qualify",
+    10: "does not qualify",
+    11: "does not qualify",
 }
+
+# shorthand in, canonical value out
+SHORTHAND = [
+    (("osm:node/3000009", "the far end away from the stalls"), "payment_to_sit", "optional"),
+    (("osm:node/3000009", "the far end away from the stalls"), "conversation", "expected"),
+    (("osm:node/3000009", "the far end away from the stalls"), "setting", "covered"),
+    (("osm:way/3000003", None), "seating", "fixed"),
+    (("osm:way/3000003", None), "payment_to_enter", "optional"),
+    (("osm:way/3000008", None), "verified_date", "2026-08-21"),
+    (("osm:node/3000007", None), "verified_date", "2026-08-22"),
+]
 
 
 def main():
@@ -34,7 +47,8 @@ def main():
     rows = survey_import.read_rows(TEN)
     features, problems = survey_import.convert(rows)
     if problems:
-        failures.append("the ten-row sample should map cleanly, but %d rows did not" % len(problems))
+        failures.append("the ten-row sample should map cleanly, but %d rows did not:\n%s"
+                        % (len(problems), problems))
     elif len(features) != 10:
         failures.append("expected 10 features from 10 rows, got %d" % len(features))
     else:
@@ -44,30 +58,32 @@ def main():
     out = os.path.join(tmp, "survey.geojson")
     with open(out, "w") as fh:
         json.dump({"type": "FeatureCollection", "features": features}, fh)
-    schema_problems, _ = validate.run([(out, "place")])
+    schema_problems, _ = validate.run([out])
     if schema_problems:
         failures.append("imported rows do not validate:\n" +
                         "\n".join(p.render() for p in schema_problems))
     else:
-        print("ok   the result validates as published places, boundary included")
+        print("ok   the result validates: schema, gates, boundary and uniqueness")
 
-    shorthand = {f["properties"]["id"]: f["properties"] for f in features}
-    checks = [
-        ("osm:node/3000005", "payment_to_sit", "optional"),   # "tolerated"
-        ("osm:node/3000005", "conversation", "expected"),     # "loud"
-        ("osm:node/3000005", "setting", "covered"),           # "arcade"
-        ("osm:way/3000003", "seating", "fixed"),              # "pews"
-        ("osm:way/3000008", "verified_date", "2026-08-21"),   # "21 August 2026"
-        ("osm:node/3000007", "verified_date", "2026-08-22"),  # "22/08/2026"
-    ]
-    wrong = ["%s.%s = %r, expected %r" % (i, f, shorthand[i].get(f), v)
-             for i, f, v in checks if shorthand[i].get(f) != v]
+    index = {(f["properties"]["id"], f["properties"].get("spot")): f["properties"]
+             for f in features}
+    if len(index) != len(features):
+        failures.append("two rows collapsed onto one id and spot pair")
+
+    shared = [k for k in index if k[0] == "osm:way/3000004"]
+    if len(shared) != 2:
+        failures.append("the two entries sharing osm:way/3000004 did not both survive")
+    else:
+        print("ok   one OSM element carries two entries, told apart by their spot")
+
+    wrong = ["%s.%s = %r, expected %r" % (k[0], f, index[k].get(f), v)
+             for k, f, v in SHORTHAND if index.get(k, {}).get(f) != v]
     if wrong:
         failures.append("shorthand was mapped wrongly: " + "; ".join(wrong))
     else:
         print("ok   shorthand and loose dates are understood")
 
-    if not all(p["verified"] for p in shorthand.values()):
+    if not all(p["verified"] for p in index.values()):
         failures.append("a visit came out unverified; a survey row is a visit")
     else:
         print("ok   a survey row counts as a visit")
@@ -85,6 +101,7 @@ def main():
                             % (number, needle, reported[number]))
     if len(reported) == len(EXPECTED) and not failures:
         print("ok   all %d unmappable rows reported, each naming its own problem" % len(reported))
+        print("ok   the three gate failures say the place does not qualify, not that the sheet is wrong")
 
     if failures:
         print("\n%d survey check(s) failed:\n" % len(failures))

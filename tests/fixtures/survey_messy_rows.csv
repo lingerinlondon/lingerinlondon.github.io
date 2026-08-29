@@ -1,9 +1,11 @@
 OSM ID,Place,Lat,Lon,Date,Payment to enter,Time pressure,Seating,Support,Mood,Notes
-osm:way/3100001,A place with an invented value,51.5194,-0.1270,2026-08-27,free,sometimes,chairs,,,The time pressure column says something the schema has no room for.
+osm:way/3100001,A place with an invented value,51.5194,-0.1270,2026-08-27,free,whenever,chairs,,,The time pressure column says something no vocabulary contains.
 ,A place with no id,51.5194,-0.1270,2026-08-27,free,no,chairs,,,Nobody looked up the OSM element.
 osm:way/3100003,,51.5194,-0.1270,2026-08-27,free,no,chairs,,,The name column was left blank.
 osm:way/3100004,A place with a column nobody defined,51.5194,-0.1270,2026-08-27,free,no,chairs,,cheerful,There is a Mood column and the schema has no such field.
 osm:way/3100005,A place dated in words,51.5194,-0.1270,last Tuesday,free,no,chairs,,,The date is not a date.
-osm:way/3100006,A place with no location,,,2026-08-27,free,no,chairs,,,No lat or lon and not in candidates.geojson either.
+osm:way/3100006,A place with no location,,,2026-08-27,free,no,chairs,,,No lat or lon anywhere on the row.
 osm:way/3100007,A place supported oddly,51.5194,-0.1270,2026-08-27,free,no,chairs,crowdfunding,,Crowdfunding is not in the support vocabulary.
-osm:way/3100008,A place with a broken latitude,about 51.5,-0.1270,2026-08-27,free,no,chairs,,,The latitude was typed as prose.
+osm:way/3100008,A ticketed gallery,51.5194,-0.1270,2026-08-27,ticket,no,chairs,,,A real answer that means the place does not qualify.
+osm:way/3100009,A place you feel you should leave,51.5194,-0.1270,2026-08-27,free,felt,chairs,,,Implied time pressure fails the gate.
+osm:way/3100010,A place you can only stand in,51.5194,-0.1270,2026-08-27,free,no,nowhere,,,Nowhere to sit fails the gate.

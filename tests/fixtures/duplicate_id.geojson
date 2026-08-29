@@ -3,22 +3,36 @@
   "features": [
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [-0.1270, 51.5194] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.127,
+          51.5194
+        ]
+      },
       "properties": {
-        "id": "osm:way/1000005",
+        "id": "osm:way/1000008",
         "name": "Entered once",
-        "why": "The first of two entries sharing one identifier.",
-        "verified": false
+        "why": "The first of two entries naming the same spot.",
+        "verified": false,
+        "spot": "the courtyard"
       }
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [-0.1275, 51.5190] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.1275,
+          51.519
+        ]
+      },
       "properties": {
-        "id": "osm:way/1000005",
-        "name": "Entered again under the same id",
-        "why": "The second of two entries sharing one identifier.",
-        "verified": false
+        "id": "osm:way/1000008",
+        "name": "Entered again",
+        "why": "The second of two entries naming the same spot.",
+        "verified": false,
+        "spot": "the courtyard"
       }
     }
   ]

@@ -11,9 +11,11 @@
         ]
       },
       "properties": {
-        "id": "osm:way/1000010",
-        "name": "A place with no sentence",
-        "verified": false
+        "id": "osm:way/1000006",
+        "name": "A place you can only stand in",
+        "why": "Warm and welcoming, but there is nowhere at all to sit down.",
+        "verified": false,
+        "seating": "none"
       }
     }
   ]

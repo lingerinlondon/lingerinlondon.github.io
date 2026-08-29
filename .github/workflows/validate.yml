@@ -1,7 +1,7 @@
 name: validate
 
 # Checks only. Nothing here writes to data/ — the corpus changes through a
-# reviewed pull request and no other way (CLAUDE.md rule 7).
+# reviewed pull request and no other way.
 on:
   pull_request:
   push:
@@ -29,8 +29,8 @@ jobs:
       - name: Prove each validation check still fires
         run: python -m tests.run_fixtures
 
-      - name: Check the seeder
-        run: python -m tests.run_seed
+      - name: Check the contribution forms still match the schema
+        run: python -m tests.run_forms
 
       - name: Check the survey importer
         run: python -m tests.run_survey

@@ -1,8 +1,9 @@
 """Prove each validation check actually fires. Run: python -m tests.run_fixtures
 
-A check nobody has watched fail is a check you do not have. Each fixture below
-breaks exactly one rule, and this asserts that the failure names the right
-field and reads plainly.
+A check nobody has watched fail is a check you do not have. Each fixture breaks
+exactly one rule, and this asserts the failure names the right field and reads
+plainly — gate failures especially, since those are read by someone who has
+just been told their suggestion does not fit.
 """
 
 import os
@@ -10,17 +11,27 @@ import sys
 
 from scripts import validate
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-FIX = os.path.join(HERE, "fixtures")
+FIX = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
 
-# fixture, profile, must-appear-in-output
 CASES = [
-    ("bad_schema.geojson", "place", ["time_pressure", "not one of", "none, implied, enforced"]),
-    ("outside_boundary.geojson", "place", ["outside the project boundary", "not a judgement"]),
-    ("duplicate_id.geojson", "place", ["id", "already used by"]),
-    ("verified_without_date.geojson", "place", ["verified_date", "missing"]),
-    ("why_missing.geojson", "place", ["why", "missing"]),
-    ("why_too_long.geojson", "place", ["why", "215 characters", "limit is 200"]),
+    ("bad_schema.geojson",
+     ["conversation", "not one of", "discouraged, possible, expected"]),
+    ("gate_payment_to_enter.geojson",
+     ["payment_to_enter", "does not pass", "without paying", "not a mark against"]),
+    ("gate_time_pressure.geojson",
+     ["time_pressure", "does not pass", "not a place you can stay in"]),
+    ("gate_no_seating.geojson",
+     ["seating", "does not pass", "only stand"]),
+    ("outside_boundary.geojson",
+     ["outside the project boundary", "not a judgement"]),
+    ("duplicate_id.geojson",
+     ["id", "already used by", "different spots"]),
+    ("verified_without_date.geojson",
+     ["verified_date", "missing"]),
+    ("why_missing.geojson",
+     ["why", "missing"]),
+    ("why_too_long.geojson",
+     ["why", "215 characters", "limit is 200"]),
 ]
 
 
@@ -31,37 +42,24 @@ def render(problems):
 def main():
     failures = []
 
-    problems, _ = validate.run([(os.path.join(FIX, "valid.geojson"), "place")])
+    problems, _ = validate.run([os.path.join(FIX, "valid.geojson")])
     if problems:
         failures.append("valid.geojson should pass but reported:\n%s" % render(problems))
     else:
-        print("ok   valid.geojson passes")
+        print("ok   valid.geojson passes, including two entries sharing one OSM id")
 
-    for name, profile, expected in CASES:
-        problems, _ = validate.run([(os.path.join(FIX, name), profile)])
+    for name, expected in CASES:
+        problems, _ = validate.run([os.path.join(FIX, name)])
         text = render(problems)
         if not problems:
             failures.append("%s should fail, but passed" % name)
             continue
         missing = [e for e in expected if e not in text]
         if missing:
-            failures.append(
-                "%s failed, but the message did not mention %s.\nGot:\n%s"
-                % (name, ", ".join(repr(m) for m in missing), text)
-            )
+            failures.append("%s failed, but the message did not mention %s.\nGot:\n%s"
+                            % (name, ", ".join(repr(m) for m in missing), text))
         else:
-            first = text.splitlines()[1].strip()
-            print("ok   %-32s fails with: %s" % (name, first))
-
-    # A candidate with no why is fine; the same feature as a published place is not.
-    problems, _ = validate.run([(os.path.join(FIX, "why_missing.geojson"), "candidate")])
-    if problems:
-        failures.append(
-            "why_missing.geojson should pass under the candidate profile, but reported:\n%s"
-            % render(problems)
-        )
-    else:
-        print("ok   why_missing.geojson passes as a candidate, as intended")
+            print("ok   %-34s fails on %s" % (name, text.splitlines()[1].strip().split(":")[0]))
 
     if failures:
         print("\n%d fixture check(s) failed:\n" % len(failures))

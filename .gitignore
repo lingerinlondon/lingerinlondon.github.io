@@ -1,6 +1,3 @@
-# Overpass responses, cached so reruns don't hammer a volunteer-run API.
-.cache/
-
 # Python
 __pycache__/
 *.py[cod]

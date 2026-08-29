@@ -25,8 +25,10 @@ import sys
 
 from scripts import schema as schema_mod
 
+GATES = {g["field"]: g for g in schema_mod.gates()}
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CANDIDATES_PATH = os.path.join(ROOT, "data", "candidates.geojson")
+
 
 # Shorthand people actually write, per field. Anything not here and not an enum
 # value is reported rather than guessed at.
@@ -41,6 +43,7 @@ SYNONYMS = {
                        "customers": "required", "purchase": "required"},
     "time_pressure": {"no": "none", "n": "none", "nothing": "none", "never": "none",
                       "felt": "implied", "some": "implied", "subtle": "implied",
+                      "implied": "implied",
                       "yes": "enforced", "y": "enforced", "limit": "enforced",
                       "asked": "enforced", "sign": "enforced"},
     "conversation": {"no": "discouraged", "n": "discouraged", "silent": "discouraged",
@@ -63,6 +66,8 @@ SYNONYMS = {
 COLUMN_ALIASES = {
     "osm_id": "id", "osm": "id", "id": "id", "ref": "id",
     "place": "name", "name": "name",
+    "spot": "spot", "where": "spot", "whereabouts": "spot", "which_part": "spot",
+    "credit": "suggested_by", "suggested_by": "suggested_by", "contributor": "suggested_by",
     "notes": "why", "why": "why", "sentence": "why", "one_sentence": "why",
     "date": "verified_date", "visited": "verified_date", "visit_date": "verified_date",
     "support": "support_options", "support_options": "support_options",
@@ -137,11 +142,15 @@ def coerce(field, raw, fields):
     allowed = schema_mod.enum_values(field)
     if allowed:
         text = str(value).strip().lower()
-        if text in allowed:
-            return text
-        mapped = SYNONYMS.get(field, {}).get(text)
-        if mapped:
-            return mapped
+        canonical = text if text in allowed else SYNONYMS.get(field, {}).get(text)
+        if canonical in allowed:
+            return canonical
+        gate = GATES.get(field)
+        if gate and canonical:
+            # A real answer, and the place does not qualify. Say that, rather
+            # than implying the sheet was filled in wrongly.
+            raise RowProblem("%s: %r means this place does not qualify. %s"
+                             % (field, value, gate["reason"]))
         raise RowProblem(
             "%s: %r is not one of %s (and is not shorthand this recognises)"
             % (field, value, ", ".join(allowed))
@@ -162,28 +171,10 @@ def read_rows(path):
         return list(csv.DictReader(fh))
 
 
-def geometry_from_candidates(ident, index):
-    feature = index.get(ident)
-    return feature["geometry"] if feature else None
-
-
-def load_index(path):
-    if not os.path.exists(path):
-        return {}
-    with open(path) as fh:
-        doc = json.load(fh)
-    return {
-        f["properties"]["id"]: f
-        for f in doc.get("features", [])
-        if (f.get("properties") or {}).get("id")
-    }
-
-
-def convert(rows, default_date=None, candidates_index=None):
+def convert(rows, default_date=None):
     """Return (features, problems). One row in, at most one feature out."""
     fields = schema_mod.fields()
     known = set(fields) | set(GEOMETRY_COLUMNS)
-    candidates_index = candidates_index or {}
 
     features = []
     problems = []
@@ -252,13 +243,11 @@ def convert(rows, default_date=None, candidates_index=None):
         geometry = None
         if lat is not None and lon is not None:
             geometry = {"type": "Point", "coordinates": [round(lon, 6), round(lat, 6)]}
-        elif props.get("id"):
-            geometry = geometry_from_candidates(props["id"], candidates_index)
-            if geometry is None and not bad_geometry:
-                row_problems.append(
-                    "no lat/lon columns, and %s is not in data/candidates.geojson to take "
-                    "the location from." % props["id"]
-                )
+        elif not bad_geometry:
+            row_problems.append(
+                "no location. Add lat and lon columns — right-click the place on "
+                "openstreetmap.org and choose 'show address' to read them off."
+            )
 
         if row_problems:
             problems.append((number, props.get("name") or props.get("id") or "unnamed", row_problems))
@@ -273,7 +262,7 @@ def convert(rows, default_date=None, candidates_index=None):
 
 
 TEMPLATE_COLUMNS = [
-    "id", "name", "lat", "lon", "date", "payment_to_enter", "payment_to_sit",
+    "id", "name", "spot", "lat", "lon", "date", "payment_to_enter", "payment_to_sit",
     "time_pressure", "conversation", "activity", "seating", "setting",
     "support_options", "why",
 ]
@@ -283,7 +272,7 @@ def print_template():
     writer = csv.writer(sys.stdout)
     writer.writerow(TEMPLATE_COLUMNS)
     writer.writerow([
-        "osm:way/123456", "The place", "51.5194", "-0.1270", "2026-08-27",
+        "osm:way/123456", "The place", "top floor, by the window", "51.5194", "-0.1270", "2026-08-27",
         "free", "free", "no", "quiet", "yes", "chairs", "in", "cafe,donation",
         "One sentence on why this is here.",
     ])
@@ -295,8 +284,6 @@ def main(argv=None):
     parser.add_argument("--out", help="Where to write. Defaults to stdout.")
     parser.add_argument("--date", help="Visit date for rows that do not carry one.")
     parser.add_argument("--template", action="store_true", help="Print a blank capture sheet and exit.")
-    parser.add_argument("--candidates", default=CANDIDATES_PATH,
-                        help="Where to look up a location when a row has no lat/lon.")
     args = parser.parse_args(argv)
 
     if args.template:
@@ -306,7 +293,7 @@ def main(argv=None):
         parser.error("give it a CSV or JSON file, or --template")
 
     rows = read_rows(args.input)
-    features, problems = convert(rows, args.date, load_index(args.candidates))
+    features, problems = convert(rows, args.date)
 
     doc = {"type": "FeatureCollection", "features": features}
     text = json.dumps(doc, indent=2, ensure_ascii=False) + "\n"

@@ -11,9 +11,11 @@
         ]
       },
       "properties": {
-        "id": "osm:way/1000010",
-        "name": "A place with no sentence",
-        "verified": false
+        "id": "osm:way/1000005",
+        "name": "A place you feel you should leave",
+        "why": "Nobody says anything, but an hour in you start to feel it.",
+        "verified": false,
+        "time_pressure": "implied"
       }
     }
   ]

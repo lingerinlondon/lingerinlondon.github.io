@@ -3,9 +3,15 @@
   "features": [
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [0.0098, 51.4826] },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.0098,
+          51.4826
+        ]
+      },
       "properties": {
-        "id": "osm:way/1000004",
+        "id": "osm:way/1000007",
         "name": "A good place, in Greenwich",
         "why": "Perfectly good, simply not inside the boundary this project draws.",
         "verified": false

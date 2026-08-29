@@ -11,9 +11,11 @@
         ]
       },
       "properties": {
-        "id": "osm:way/1000010",
-        "name": "A place with no sentence",
-        "verified": false
+        "id": "osm:way/1000004",
+        "name": "A ticketed gallery",
+        "why": "Good place, but you have to buy a ticket to get in.",
+        "verified": false,
+        "payment_to_enter": "required"
       }
     }
   ]
