@@ -37,7 +37,7 @@ OUT = os.path.join(ROOT, "site", "index.html")
 
 TITLE = "Linger in London"
 STANDFIRST = (
-    "A list of places in 'central' London you can spend time in, doing what you want, without time or financial pressure."
+    "A list of places in 'central' London you can spend time in, doing what you want, without time or financial pressure. "
     "Use these places to study, read, do laptop work, take a call, listen to music, play chess, chill with friends, etc."
 )
 
