@@ -6,6 +6,33 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          -0.191799,
+          51.501291
+        ]
+      },
+      "properties": {
+        "id": "osm:node/6476410685",
+        "spot": "Particularly the small library downstairs.",
+        "name": "Japan House",
+        "seating": "soft",
+        "conversation": "possible",
+        "activity": "expected",
+        "setting": "indoor",
+        "table": "some",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "ticketed_events"
+        ],
+        "why": "A fairly calming space where you can sit upstairs and read Japanese books or do work in the downstairs library.",
+        "last_checked": "2026-08-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           -0.122783,
           51.509455
         ]
