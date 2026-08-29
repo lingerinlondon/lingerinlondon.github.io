@@ -35,9 +35,8 @@ ISSUE_FORM_URL = ("https://github.com/lingerinlondon/lingerinlondon.github.io"
                   "/issues/new?template=suggest-a-place.yml")
 
 INTRO = (
-    "This is a list of central London places you can turn up to, stay a while, and pay "
-    "nothing. Suggestions are read by a person before anything is published, so there is "
-    "no rush and nothing goes live automatically."
+    "Any new suggestions are very welcome and are what keeps this site alive! For a few "
+    "reasons, suggestions are confirmed by the site admin before they appear on the site."
 )
 
 PREAMBLE = (

@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        This is a list of central London places you can turn up to, stay a while, and pay nothing. Suggestions are read by a person before anything is published, so there is no rush and nothing goes live automatically.
+        Any new suggestions are very welcome and are what keeps this site alive! For a few reasons, suggestions are confirmed by the site admin before they appear on the site.
 
         Please suggest places you have been to yourself. The questions below assume you have sat there — they are not answerable from a map.
   - type: checkboxes
@@ -70,7 +70,7 @@ body:
     attributes:
       label: "Why is it here?"
       description: >-
-        One sentence, up to 200 characters. What does this place not ask of you?
+        One sentence, up to 200 characters. Why does this place feel like a comfortable place to just ‘be’ in London?
     validations:
       required: true
   - type: dropdown

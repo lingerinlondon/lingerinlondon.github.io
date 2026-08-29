@@ -61,14 +61,31 @@ def copy_alongside(site_dir):
 
 
 TITLE = "Linger in London"
+# {scope} is where the superscript citation goes. The prose stays one readable
+# string, and the marker is replaced with a link rather than being escaped.
+SCOPE_MARKER = "{scope}"
 STANDFIRST = (
-    "A list of places in 'central' London you can spend time in, doing what you want, without time or financial pressure. "
-    "Use these places to study, read, do laptop work, take a call, listen to music, play chess, chill with friends, etc."
+    "A list of places in 'central'{scope} London you can spend time in, doing what you want, without time or financial pressure. "
+    "Use these places to study, read, do laptop work, take a call, listen to music, play chess, chill with friends, etc. "
+    "Think of what London's public living rooms would be."
+)
+
+SCOPE_NOTE = (
+    "Central London is here taken to mean, roughly, Olympia in the west, Spitalfields in "
+    "the east, Southwark in the south, and Regent's Park in the north. You can get the "
+    '<a href="data/boundary.geojson">boundary file here</a>.'
 )
 
 
 def esc(text):
     return html.escape(str(text), quote=True)
+
+
+def standfirst_html():
+    """The standfirst, with a superscript citation where the marker sits."""
+    before, _, after = STANDFIRST.partition(SCOPE_MARKER)
+    citation = '<sup><a href="#scope" id="scope-ref" aria-describedby="scope">1</a></sup>'
+    return esc(before) + citation + esc(after)
 
 
 def osm_url(ident):
@@ -157,11 +174,14 @@ def render(places, gates, chips):
         "  a { color: inherit; }",
         "  .empty { border-top: 1px solid var(--rule); padding-top: 1.5rem; }",
         "  footer { border-top: 1px solid var(--rule); margin-top: 2.5rem; padding-top: 1.2rem; }",
+        "  footer .note { color: var(--quiet); font-size: 0.9rem; }",
+        "  sup a { text-decoration: none; padding: 0 0.1em; }",
+        "  #scope:target { background: color-mix(in srgb, var(--ink) 8%, transparent); }",
         "</style>",
         "</head>",
         "<body>",
         "<h1>%s</h1>" % esc(TITLE),
-        "<p>%s</p>" % esc(STANDFIRST),
+        "<p>%s</p>" % standfirst_html(),
         "<p>There are no ratings here, no review counts and no ordering by popularity</p>",
     ]
 
@@ -242,6 +262,7 @@ def render(places, gates, chips):
 
     parts += [
         "<footer>",
+        '<p class="note" id="scope"><sup>1</sup> %s</p>' % SCOPE_NOTE,
         '<p class="count">The whole list is <a href="data/places.geojson">a GeoJSON file</a> '
         'you can download, fork or load into anything else, described by '
         '<a href="schema/place.schema.json">its schema</a>. The project boundary is '
