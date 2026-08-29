@@ -67,6 +67,13 @@ def main():
     else:
         print("ok   both forms ask when, and the browser refuses a visit over a year old")
 
+    # Someone with a GitHub account should be sent to the better route, not
+    # left transcribing into an email because the page never mentioned it.
+    if build_forms.ISSUE_FORM_URL not in page:
+        failures.append("the email form does not offer the GitHub route to people who have one")
+    else:
+        print("ok   the page points GitHub users at the issue form instead")
+
     if build_forms.SUGGESTIONS_EMAIL not in page:
         failures.append("the email form gives no address to send the message to")
     else:
