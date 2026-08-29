@@ -16,15 +16,15 @@ body:
       label: The four things a place has to be
       description: >-
         All four have to be true. If one of them is not, this is not the right list for the place — which is a fact about the list, not about the place.
-    options:
-      - label: "There is nothing you have to pay to get in."
-        required: true
-      - label: "You can sit down without buying anything."
-        required: true
-      - label: "You could stay for hours without anyone minding."
-        required: true
-      - label: "There is somewhere to sit down."
-        required: true
+      options:
+        - label: "There is nothing you have to pay to get in."
+          required: true
+        - label: "You can sit down without buying anything."
+          required: true
+        - label: "You could stay for hours without anyone minding."
+          required: true
+        - label: "There is somewhere to sit down."
+          required: true
   - type: input
     id: name
     attributes:
@@ -111,13 +111,13 @@ body:
       label: "Ways to support the place, if there are any"
       description: >-
         Listed on the site and never ranked or ordered by. A place with none of these is not worse than a place with four.
-    options:
-      - label: "cafe"
-      - label: "shop"
-      - label: "donation"
-      - label: "membership"
-      - label: "ticketed events"
-      - label: "volunteering"
+      options:
+        - label: "cafe"
+        - label: "shop"
+        - label: "donation"
+        - label: "membership"
+        - label: "ticketed events"
+        - label: "volunteering"
   - type: input
     id: suggested_by
     attributes:

@@ -79,11 +79,11 @@ def build_issue_form():
                 "      label: %s" % q["label"],
                 "      description: >-",
                 "        %s" % q["note"],
-                "    options:",
+                "      options:",
             ]
             for gate in schema_mod.gates():
-                lines.append("      - label: %s" % yq(gate["confirm"]))
-                lines.append("        required: true")
+                lines.append("        - label: %s" % yq(gate["confirm"]))
+                lines.append("          required: true")
             continue
 
         kind = {"input": "input", "date": "input", "textarea": "textarea",
@@ -103,9 +103,9 @@ def build_issue_form():
                 lines.append("        - %s" % yq(
                     form_spec.option_label(value, q["values"].get(value))))
         elif q["kind"] == "checkboxes":
-            lines.append("    options:")
+            lines.append("      options:")
             for value in q["options"]:
-                lines.append("      - label: %s" % yq(value.replace("_", " ")))
+                lines.append("        - label: %s" % yq(value.replace("_", " ")))
         elif q.get("required"):
             lines += ["    validations:", "      required: true"]
 

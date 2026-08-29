@@ -2,3 +2,8 @@
 # jsonschema validates data/places.geojson against schema/place.schema.json.
 # Everything else — point-in-polygon, CSV import, form generation — is stdlib.
 jsonschema>=4.18
+
+# Only used by the tests, to parse .github/ISSUE_TEMPLATE and hold it to
+# GitHub's structure. A malformed issue form is not reported by GitHub — it
+# just silently serves no form — so this is checked rather than eyeballed.
+PyYAML>=6.0
