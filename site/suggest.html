@@ -137,8 +137,9 @@
 </form>
 <div id="result">
 <h2>Copy this into an email</h2>
-<p class="note">Send it to <strong>SUGGESTIONS_EMAIL_NOT_SET</strong>. Nothing has been sent for you.</p>
+<p class="note">Nothing has been sent for you. Copy the message below, then reveal the address to send it to.</p>
 <textarea id="letter" readonly></textarea>
+<p class="note"><button type="button" id="reveal">Show the email address</button><span id="address"></span></p>
 </div>
 <script>
   // The browser enforces the four gates: a required checkbox that is not ticked
@@ -175,6 +176,17 @@
     document.getElementById('result').setAttribute('data-shown', '');
     out.focus();
     out.select();
+  });
+  // Assembled from character codes and only on request, so the address is not
+  // sitting in the page source as a string. This slows bulk harvesters down; it
+  // does not stop anyone who looks properly, which is why the alias is one that
+  // can be retired and regenerated.
+  document.getElementById('reveal').addEventListener('click', function (event) {
+    var codes = [83, 85, 71, 71, 69, 83, 84, 73, 79, 78, 83, 95, 69, 77, 65, 73, 76, 95, 78, 79, 84, 95, 83, 69, 84];
+    var address = codes.map(function (c) { return String.fromCharCode(c); }).join('');
+    var span = document.getElementById('address');
+    span.textContent = ' ' + address;
+    event.target.remove();
   });
 </script>
 </body>

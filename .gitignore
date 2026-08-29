@@ -10,3 +10,7 @@ venv/
 ._*
 .Spotlight-V100
 .Trashes
+
+# The contact address for suggestions. Never committed, so a spammed alias
+# can be rotated without leaving the old one in git history.
+.suggestions-email

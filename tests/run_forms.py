@@ -58,8 +58,14 @@ def main():
     if not failures:
         print("ok   every descriptive value is offered, and none of them are required")
 
-    if build_forms.SUGGESTIONS_EMAIL in page and "NOT_SET" in build_forms.SUGGESTIONS_EMAIL:
-        print("note the email form carries a placeholder address, not a real one")
+    # The address must never appear as a readable string in the page source.
+    address = build_forms.suggestions_email()
+    if address in page:
+        failures.append("the contact address is sitting in the page as plain text")
+    elif address == build_forms.EMAIL_PLACEHOLDER:
+        print("note no address set yet — put one in .suggestions-email and rebuild")
+    else:
+        print("ok   the contact address is assembled on request, not written into the page")
 
     if failures:
         print("\n%d form check(s) failed:\n" % len(failures))
