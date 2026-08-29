@@ -80,7 +80,12 @@ jobs:
           git add data/places.geojson
           git commit -m "Add a suggested place from #$NUMBER" \
                      -m "Opened automatically from the suggestion form. Not checked by anyone yet."
-          git push --force-with-lease origin "$BRANCH"
+          # Plain force, deliberately. The branch is derived from the issue and
+          # is rebuilt from scratch each time the issue is edited, so it is not
+          # somewhere to keep work. --force-with-lease would not help: checkout
+          # only fetches main, so there is no remote ref to hold a lease against,
+          # and fetching one first would just make the lease pass anyway.
+          git push --force origin "$BRANCH"
 
           {
             echo "From #$NUMBER."
@@ -92,6 +97,8 @@ jobs:
               echo
             fi
             echo "Validation runs on this pull request. If it is red, the entry is incomplete rather than wrong — fill in what it names and it will go green."
+            echo
+            echo "**This branch is rebuilt from the issue every time the issue is edited**, so anything committed here is overwritten when that happens. The tidiest way to correct a suggestion is to edit #$NUMBER and let it regenerate. Edit the branch directly only once the issue has settled."
           } > /tmp/pr.md
 
           gh pr create --base main --head "$BRANCH" \
