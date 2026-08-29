@@ -103,6 +103,43 @@ def main():
         print("ok   all %d unmappable rows reported, each naming its own problem" % len(reported))
         print("ok   the three gate failures say the place does not qualify, not that the sheet is wrong")
 
+    # Adding places one trip at a time must never lose the previous trips.
+    corpus = os.path.join(tmp, "corpus.geojson")
+    trip_one = os.path.join(tmp, "one.csv")
+    trip_two = os.path.join(tmp, "two.csv")
+    header = ("id,name,spot,lat,lon,date,payment_to_enter,payment_to_sit,time_pressure,"
+              "conversation,activity,seating,setting,support_options,why\n")
+    open(trip_one, "w").write(header + "osm:way/9000001,A library,,51.5194,-0.1270,"
+                              "2026-08-28,free,free,no,quiet,study,chairs,in,,First one.\n")
+    open(trip_two, "w").write(header + "osm:node/9000002,A garden,,51.5163,-0.1220,"
+                              "2026-08-29,free,free,no,ok,yes,bench,out,,Second one.\n")
+
+    quietly = {"stdout": sys.stdout, "stderr": sys.stderr}
+    sys.stdout = open(os.devnull, "w")
+    sys.stderr = open(os.devnull, "w")
+    try:
+        survey_import.main([trip_one, "--out", corpus])
+        refused = False
+        try:
+            survey_import.main([trip_two, "--out", corpus])
+        except SystemExit:
+            refused = True
+        survey_import.main([trip_two, "--out", corpus, "--merge"])
+    finally:
+        sys.stdout.close(); sys.stderr.close()
+        sys.stdout = quietly["stdout"]; sys.stderr = quietly["stderr"]
+
+    if not refused:
+        failures.append("importing over a non-empty corpus did not refuse; fieldwork could be lost")
+    else:
+        print("ok   importing over an existing corpus refuses rather than guessing")
+
+    names = [f["properties"]["name"] for f in json.load(open(corpus))["features"]]
+    if sorted(names) != ["A garden", "A library"]:
+        failures.append("merging lost or duplicated places: %s" % names)
+    else:
+        print("ok   --merge adds a trip without losing the trips before it")
+
     if failures:
         print("\n%d survey check(s) failed:\n" % len(failures))
         for f in failures:

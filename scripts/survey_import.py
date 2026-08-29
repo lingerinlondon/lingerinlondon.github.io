@@ -282,6 +282,12 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("input", nargs="?", help="A CSV or JSON file, one row per visit.")
     parser.add_argument("--out", help="Where to write. Defaults to stdout.")
+    parser.add_argument("--merge", action="store_true",
+                        help="Add these rows to what is already in --out, rather than "
+                             "replacing it. This is what you want when adding places one "
+                             "trip at a time.")
+    parser.add_argument("--replace", action="store_true",
+                        help="Overwrite --out entirely, discarding what is in it.")
     parser.add_argument("--date", help="Visit date for rows that do not carry one.")
     parser.add_argument("--template", action="store_true", help="Print a blank capture sheet and exit.")
     args = parser.parse_args(argv)
@@ -295,6 +301,41 @@ def main(argv=None):
     rows = read_rows(args.input)
     features, problems = convert(rows, args.date)
 
+    existing = []
+    if args.out and os.path.exists(args.out):
+        with open(args.out) as fh:
+            existing = json.load(fh).get("features", [])
+
+    if existing and not (args.merge or args.replace):
+        raise SystemExit(
+            "%s already holds %d place%s.\n\n"
+            "  --merge    add these rows to them, which is almost always what you want\n"
+            "  --replace  throw those %d away and write only these rows\n\n"
+            "Refusing to guess, because guessing wrong loses fieldwork."
+            % (args.out, len(existing), "" if len(existing) == 1 else "s", len(existing))
+        )
+
+    added = updated = 0
+    if args.merge and existing:
+        # Keyed on id and spot together, the same key the validator dedupes on:
+        # revisiting a place updates it, a different corner of it is a new entry.
+        index = {}
+        for feature in existing:
+            props = feature.get("properties") or {}
+            index[(props.get("id"), props.get("spot") or None)] = feature
+        for feature in features:
+            props = feature["properties"]
+            key = (props.get("id"), props.get("spot") or None)
+            if key in index:
+                index[key] = feature
+                updated += 1
+            else:
+                index[key] = feature
+                added += 1
+        features = list(index.values())
+
+    features.sort(key=lambda f: ((f["properties"].get("name") or "").lower(),
+                                 f["properties"].get("spot") or ""))
     doc = {"type": "FeatureCollection", "features": features}
     text = json.dumps(doc, indent=2, ensure_ascii=False) + "\n"
     if args.out:
@@ -304,7 +345,13 @@ def main(argv=None):
         sys.stdout.write(text)
 
     where = args.out or "stdout"
-    sys.stderr.write("\n%d of %d rows became features (%s).\n" % (len(features), len(rows), where))
+    if args.merge and existing:
+        sys.stderr.write("\n%d added, %d updated. %s now holds %d place%s.\n"
+                         % (added, updated, where, len(features),
+                            "" if len(features) == 1 else "s"))
+    else:
+        sys.stderr.write("\n%d of %d rows became features (%s).\n"
+                         % (len(features), len(rows), where))
 
     if problems:
         sys.stderr.write("\n%d row%s could not be mapped, and none of them were dropped "
