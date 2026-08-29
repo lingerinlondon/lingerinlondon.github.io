@@ -44,6 +44,39 @@ SHORTHAND = [
 def main():
     failures = []
 
+    # Shorthand must never point at a value the schema has dropped. It did,
+    # the moment activity lost a value, and the only symptom was three rows of
+    # a survey sheet failing to import.
+    # Gate fields are exempt: their shorthand points at excluded values on
+    # purpose, so a place that does not qualify is told so rather than told its
+    # spelling is wrong.
+    gates = {g["field"] for g in schema_mod.gates()}
+    stale = []
+    for field, table in survey_import.SYNONYMS.items():
+        if field in gates:
+            continue
+        allowed = set(schema_mod.enum_values(field) or [])
+        stale += ["%s: %r maps to %r" % (field, k, v)
+                  for k, v in table.items() if v not in allowed]
+    if stale:
+        failures.append("shorthand points at values the schema no longer has: %s"
+                        % "; ".join(stale))
+    else:
+        print("ok   descriptive shorthand lands on values the schema still has")
+
+    # ...and a gate's shorthand must still cover the excluded values, or a
+    # place that fails a gate gets a spelling complaint instead of a reason.
+    uncovered = []
+    for gate in schema_mod.gates():
+        table = survey_import.SYNONYMS.get(gate["field"], {})
+        allowed = set(schema_mod.enum_values(gate["field"]) or [])
+        if not any(v not in allowed for v in table.values()):
+            uncovered.append(gate["field"])
+    if uncovered:
+        failures.append("no shorthand for the failing side of: %s" % ", ".join(uncovered))
+    else:
+        print("ok   every gate still recognises the answers that fail it")
+
     # The blank sheet must offer a column for every field. It once fell two
     # fields behind, and a column missing from the sheet is a question nobody
     # thinks to answer while sitting there.

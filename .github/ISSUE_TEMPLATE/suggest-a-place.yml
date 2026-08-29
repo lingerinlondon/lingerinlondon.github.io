@@ -87,8 +87,7 @@ body:
       label: "Working, reading, or just sitting"
       options:
         - "discouraged — for sitting, not working — you can stay as long as you like, but getting a laptop or a sketchbook out would feel out of keeping — a church interior, a memorial garden, a bench in front of a painting. Somewhere to be rather than to do."
-        - "possible — you can work or read — nobody takes an interest in what you are doing, though you might be the only one doing it"
-        - "expected — people work and read here — others are visibly settled in with their own things, so you have company and cover"
+        - "possible — you can work or read — getting a laptop, a book or a sketchbook out is unremarkable here, whether or not anyone else happens to be doing it today"
   - type: dropdown
     id: seating
     attributes:

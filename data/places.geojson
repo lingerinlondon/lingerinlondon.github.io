@@ -43,7 +43,7 @@
         "name": "Japan House",
         "seating": "soft",
         "conversation": "possible",
-        "activity": "expected",
+        "activity": "possible",
         "setting": "indoor",
         "table": "some",
         "support_options": [

@@ -34,7 +34,7 @@ TODAY = datetime.date(2026, 8, 29)
 
 # Which value each dropdown is answered with, written exactly as the form
 # renders it. Taken from the schema so a reworded option cannot silently pass.
-CHOSEN = {"conversation": "possible", "activity": "expected",
+CHOSEN = {"conversation": "possible", "activity": "possible",
           "seating": "fixed", "setting": "indoor", "table": "some"}
 for _field, _value in CHOSEN.items():
     ANSWERS[_field] = form_spec.option_label(
@@ -73,7 +73,7 @@ def main():
         "spot": "the upper walkway",
         "name": "The Barbican Conservatory",
         "conversation": "possible",
-        "activity": "expected",
+        "activity": "possible",
         "seating": "fixed",
         "setting": "indoor",
         "table": "some",

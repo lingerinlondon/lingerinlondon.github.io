@@ -19,7 +19,7 @@
         "time_pressure": "none",
         "seating": "fixed",
         "conversation": "discouraged",
-        "activity": "expected",
+        "activity": "possible",
         "setting": "indoor",
         "support_options": [
           "donation",
@@ -78,7 +78,7 @@
         "time_pressure": "none",
         "seating": "fixed",
         "conversation": "possible",
-        "activity": "expected",
+        "activity": "possible",
         "setting": "outdoor",
         "last_checked": "2026-08-20",
         "table": "none"
