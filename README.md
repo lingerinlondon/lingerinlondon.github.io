@@ -1,14 +1,11 @@
-# Central London Third Places
+# Linger in London
 
 An open, forkable directory of central London places you can turn up to, stay a while, and
-pay nothing. It records what a place *doesn't* ask of you — no payment to enter or sit, no
-time pressure, no obligation to talk or take part — because that is the axis nothing else
-indexes and the reason these places are hard to search for. The scope is central London and
-it is stated in the name on purpose: `data/boundary.geojson` is the authoritative outline,
+pay nothing. It records what a place *doesn't* ask of you - no payment to enter or sit, no
+time pressure, no obligation to talk or take part. The scope is central London: `data/boundary.geojson` is the authoritative outline,
 and anything outside it fails validation.
 
 There are no ratings, no review counts and no popularity ordering, and there never will be.
-Ranking by popularity is the specific failure this project exists to avoid.
 
 ## The four gates
 
@@ -27,20 +24,18 @@ rejects a place that fails one and why both contribution forms ask exactly these
 questions first. Everything else in the schema is description, and only description gets a
 filter on the site: filtering on a gate would return the whole list.
 
-The corpus is expected to stay small — under fifty places, quite possibly under thirty-five.
-That is not a shortfall. Very few places actually clear all four.
+The corpus is expected to stay small. Very few places actually clear all four.
 
 ## What is here
 
 | Path | |
 |---|---|
-| `data/boundary.geojson` | The project boundary. Authoritative; the prose in the plan is commentary. |
-| `data/places.geojson` | The corpus. Currently empty — it fills up on foot. |
+| `data/boundary.geojson` | The project boundary. Authoritative. |
+| `data/places.geojson` | The corpus. |
 | `schema/place.schema.json` | The single source of truth. Validation, both forms and the site's filters all derive from it. |
 | `scripts/` | Validation, form generation, survey import. Python 3, one dependency. |
 | `site/suggest.html` | The contribution form for people without a GitHub account. Generated — do not edit. |
 | `.github/ISSUE_TEMPLATE/` | The contribution form for people with one. Generated — do not edit. |
-| `docs/PLAN.md` | Why the project is shaped this way. Written earlier, and scoped to Greater London rather than central. |
 
 ## Suggesting a place
 
@@ -105,7 +100,7 @@ building, and the corpus should be able to say so. `spot` names a location and n
 judgement belongs in the one `why` sentence.
 
 Overture GERS ids stay valid in the schema, but are not used. GERS solves stable identity at
-machine scale, which is not a problem this project has at forty places.
+machine scale, which is not a problem this project has at forty-ish places.
 
 ## Verified and unverified
 
@@ -120,4 +115,3 @@ rather than code: roughly fifty visits, whose actual output is the schema rather
 data. Expect fields to be merged, split or dropped afterwards. Everything here is built to
 make that change cheap — including the forms, which are regenerated rather than rewritten.
 
-The licence is undecided; see `LICENCE` for why it waits.
