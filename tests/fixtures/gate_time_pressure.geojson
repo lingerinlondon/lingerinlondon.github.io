@@ -14,8 +14,8 @@
         "id": "osm:way/1000005",
         "name": "A place you feel you should leave",
         "why": "Nobody says anything, but an hour in you start to feel it.",
-        "verified": false,
-        "time_pressure": "implied"
+        "time_pressure": "implied",
+        "last_checked": "2026-08-20"
       }
     }
   ]

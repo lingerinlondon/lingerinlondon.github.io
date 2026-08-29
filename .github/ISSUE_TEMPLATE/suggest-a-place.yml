@@ -9,15 +9,13 @@ body:
       value: |
         This is a list of central London places you can turn up to, stay a while, and pay nothing. Suggestions are read by a person before anything is published, so there is no rush and nothing goes live automatically.
 
-        Please suggest places you have been to yourself. One sentence on why is
-        worth more than a full description.
+        Please suggest places you have been to yourself. The questions below assume you have sat there — they are not answerable from a map.
   - type: checkboxes
     id: gates
     attributes:
       label: The four things a place has to be
       description: >-
-        All four have to be true. If one of them is not, this is not the right list
-        for the place — which is a fact about the list, not about the place.
+        All four have to be true. If one of them is not, this is not the right list for the place — which is a fact about the list, not about the place.
     options:
       - label: "There is nothing you have to pay to get in."
         required: true
@@ -30,29 +28,47 @@ body:
   - type: input
     id: name
     attributes:
-      label: What is it called?
+      label: "What is it called?"
     validations:
       required: true
   - type: input
     id: spot
     attributes:
-      label: Which part of it, if the whole place is not the point?
+      label: "Which part of it, if the whole place is not the point?"
       description: >-
-        Optional. Somewhere like 'top floor, by the window' or 'the benches under
-        the canopy'. Leave empty for the place as a whole.
+        Optional. Somewhere like “top floor, by the window” or “the benches under the canopy”. Leave empty for the place as a whole.
   - type: input
     id: where
     attributes:
-      label: Where is it?
+      label: "Where is it?"
       description: >-
-        A street and area is plenty. If you happen to know its OpenStreetMap link
-        or id, paste that instead and it saves a lookup — but it is not expected.
+        A street and area is plenty.
+    validations:
+      required: true
+  - type: input
+    id: osm_id
+    attributes:
+      label: "Its OpenStreetMap id, if you know it"
+      description: >-
+        Optional. Find the place on openstreetmap.org, click it, and the address bar shows something like /way/123456. Paste that, or the whole link. Leave it empty and it will be looked up for you.
+  - type: input
+    id: coordinates
+    attributes:
+      label: "Its coordinates, if you know them"
+      description: >-
+        Optional. Two numbers, latitude first: 51.5194, -0.1270. On openstreetmap.org, right-click the spot and choose “show address”.
+  - type: input
+    id: last_checked
+    attributes:
+      label: "When were you last there?"
+      description: >-
+        Places change, so a suggestion needs a date. Within the last year, please — anything older is a memory rather than a report. Written as a date, like 2025-08-29.
     validations:
       required: true
   - type: textarea
     id: why
     attributes:
-      label: Why is it here?
+      label: "Why is it here?"
       description: >-
         One sentence, up to 200 characters. What does this place not ask of you?
     validations:
@@ -60,7 +76,7 @@ body:
   - type: dropdown
     id: conversation
     attributes:
-      label: Conversation
+      label: "Conversation"
       options:
         - "discouraged — a silent room"
         - "possible — you can talk without being out of place"
@@ -68,7 +84,7 @@ body:
   - type: dropdown
     id: activity
     attributes:
-      label: Doing your own thing
+      label: "Doing your own thing"
       options:
         - "discouraged — you are expected to be here for the stated purpose"
         - "possible — nobody minds what you are doing"
@@ -76,7 +92,7 @@ body:
   - type: dropdown
     id: seating
     attributes:
-      label: Seating
+      label: "Seating"
       options:
         - "fixed — benches or bolted seating"
         - "movable — chairs you can move"
@@ -84,7 +100,7 @@ body:
   - type: dropdown
     id: setting
     attributes:
-      label: Setting
+      label: "Setting"
       options:
         - "indoor — inside a building"
         - "outdoor — open air"
@@ -92,10 +108,9 @@ body:
   - type: checkboxes
     id: support_options
     attributes:
-      label: Ways to support the place, if there are any
+      label: "Ways to support the place, if there are any"
       description: >-
-        Listed on the site and never ranked or ordered by. A place with none of
-        these is not worse than a place with four.
+        Listed on the site and never ranked or ordered by. A place with none of these is not worse than a place with four.
     options:
       - label: "cafe"
       - label: "shop"
@@ -106,5 +121,6 @@ body:
   - type: input
     id: suggested_by
     attributes:
-      label: How would you like to be credited?
-      description: Optional. Leave empty for no credit.
+      label: "How would you like to be credited?"
+      description: >-
+        Optional. Leave empty for no credit.

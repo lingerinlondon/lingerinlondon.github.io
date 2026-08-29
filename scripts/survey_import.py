@@ -69,7 +69,8 @@ COLUMN_ALIASES = {
     "spot": "spot", "where": "spot", "whereabouts": "spot", "which_part": "spot",
     "credit": "suggested_by", "suggested_by": "suggested_by", "contributor": "suggested_by",
     "notes": "why", "why": "why", "sentence": "why", "one_sentence": "why",
-    "date": "verified_date", "visited": "verified_date", "visit_date": "verified_date",
+    "date": "last_checked", "visited": "last_checked", "visit_date": "last_checked",
+    "last_checked": "last_checked", "when": "last_checked",
     "support": "support_options", "support_options": "support_options",
     "lat": "lat", "latitude": "lat", "lon": "lon", "lng": "lon", "long": "lon",
     "longitude": "lon",
@@ -122,12 +123,7 @@ def coerce(field, raw, fields):
                 out.append(key)
         return out or None
 
-    if field == "verified":
-        if isinstance(value, bool):
-            return value
-        return str(value).strip().lower() in ("1", "true", "yes", "y", "verified")
-
-    if field == "verified_date":
+    if field == "last_checked":
         text = str(value).strip()
         for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d/%m/%y", "%d %b %Y", "%d %B %Y"):
             try:
@@ -135,7 +131,7 @@ def coerce(field, raw, fields):
             except ValueError:
                 continue
         raise RowProblem(
-            "verified_date: %r is not a date this understands. Try 2026-08-27 or 27/08/2026."
+            "last_checked: %r is not a date this understands. Try 2026-08-27 or 27/08/2026."
             % text
         )
 
@@ -209,7 +205,7 @@ def convert(rows, default_date=None):
                 value = coerce(key, raw_value, fields)
             except RowProblem as exc:
                 row_problems.append(str(exc))
-                if key == "verified_date":
+                if key == "last_checked":
                     bad_date = True
                 continue
             if value is not None:
@@ -229,11 +225,9 @@ def convert(rows, default_date=None):
         if not props.get("name"):
             row_problems.append("no name.")
 
-        # A visit is a verification unless the row says otherwise.
-        props.setdefault("verified", True)
-        if props["verified"] and not props.get("verified_date"):
+        if not props.get("last_checked"):
             if default_date:
-                props["verified_date"] = default_date
+                props["last_checked"] = default_date
             elif not bad_date:
                 # If the date column was there but unreadable, that has been said already.
                 row_problems.append(

@@ -36,8 +36,8 @@ SHORTHAND = [
     (("osm:node/3000009", "the far end away from the stalls"), "setting", "covered"),
     (("osm:way/3000003", None), "seating", "fixed"),
     (("osm:way/3000003", None), "payment_to_enter", "optional"),
-    (("osm:way/3000008", None), "verified_date", "2026-08-21"),
-    (("osm:node/3000007", None), "verified_date", "2026-08-22"),
+    (("osm:way/3000008", None), "last_checked", "2026-08-21"),
+    (("osm:node/3000007", None), "last_checked", "2026-08-22"),
 ]
 
 
@@ -83,10 +83,10 @@ def main():
     else:
         print("ok   shorthand and loose dates are understood")
 
-    if not all(p["verified"] for p in index.values()):
-        failures.append("a visit came out unverified; a survey row is a visit")
+    if not all(p.get("last_checked") for p in index.values()):
+        failures.append("a row came out with no date; every entry needs one")
     else:
-        print("ok   a survey row counts as a visit")
+        print("ok   every row carries the date someone was there")
 
     rows = survey_import.read_rows(MESSY)
     features, problems = survey_import.convert(rows)

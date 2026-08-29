@@ -1,0 +1,94 @@
+name: suggestion
+
+# Turns a suggestion issue into a pull request for review. It never merges
+# anything: the corpus changes when a person reads the change and merges it,
+# and no other way.
+#
+# A suggestion with no OpenStreetMap id still opens a pull request, with a
+# placeholder that fails validation on purpose. A visibly unfinished pull
+# request is safer than a plausible wrong one, because nobody goes back to
+# check an entry that looked finished.
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  to-pull-request:
+    if: contains(github.event.issue.labels.*.name, 'suggestion')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: python -m pip install --quiet -r requirements.txt
+
+      - name: Save the issue body
+        env:
+          BODY: ${{ github.event.issue.body }}
+        run: printf '%s' "$BODY" > /tmp/issue.md
+
+      - name: Read it into a place
+        id: convert
+        run: |
+          set +e
+          python -m scripts.issue_to_place \
+            --body /tmp/issue.md \
+            --out data/places.geojson \
+            --notes /tmp/notes.md 2>/tmp/error.txt
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+          set -e
+
+      # A rejection is a reply to a person, not a failed build. Say why, plainly.
+      - name: Explain why it cannot be accepted
+        if: steps.convert.outputs.status == '2'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          {
+            echo "Thanks for this. It can't go on the list as it stands:"
+            echo
+            sed 's/^/> /' /tmp/error.txt
+            echo
+            echo "Nothing else is needed from you unless you'd like to edit the issue above — it will be read again if you do."
+          } > /tmp/reply.md
+          gh issue comment "$NUMBER" --body-file /tmp/reply.md
+
+      - name: Open a pull request
+        if: steps.convert.outputs.status == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          BRANCH="suggestion-$NUMBER"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add data/places.geojson
+          git commit -m "Add a suggested place from #$NUMBER" \
+                     -m "Opened automatically from the suggestion form. Not checked by anyone yet."
+          git push --force-with-lease origin "$BRANCH"
+
+          {
+            echo "From #$NUMBER."
+            echo
+            if [ -s /tmp/notes.md ]; then
+              echo "**Before merging:**"
+              echo
+              cat /tmp/notes.md
+              echo
+            fi
+            echo "Validation runs on this pull request. If it is red, the entry is incomplete rather than wrong — fill in what it names and it will go green."
+          } > /tmp/pr.md
+
+          gh pr create --base main --head "$BRANCH" \
+            --title "Suggested place from #$NUMBER" \
+            --body-file /tmp/pr.md || gh pr edit "$BRANCH" --body-file /tmp/pr.md

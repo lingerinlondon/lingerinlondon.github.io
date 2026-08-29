@@ -35,5 +35,8 @@ jobs:
       - name: Check the reading surface
         run: python -m tests.run_site
 
+      - name: Check suggestions become places correctly
+        run: python -m tests.run_issue
+
       - name: Check the survey importer
         run: python -m tests.run_survey

@@ -14,7 +14,6 @@
         "id": "osm:way/1000001",
         "name": "A reading room",
         "why": "You can sit here all afternoon without anyone once asking what you are here for.",
-        "verified": true,
         "payment_to_enter": "none",
         "payment_to_sit": "none",
         "time_pressure": "none",
@@ -26,7 +25,7 @@
           "donation",
           "shop"
         ],
-        "verified_date": "2026-08-20"
+        "last_checked": "2026-08-20"
       }
     },
     {
@@ -42,7 +41,6 @@
         "id": "osm:node/1000002",
         "name": "A riverside foyer",
         "why": "Movable chairs, nobody minds a laptop, and it stays open late.",
-        "verified": true,
         "spot": "top floor, by the window",
         "payment_to_enter": "none",
         "payment_to_sit": "optional",
@@ -55,8 +53,8 @@
           "cafe",
           "membership"
         ],
-        "verified_date": "2026-08-21",
-        "suggested_by": "A contributor"
+        "suggested_by": "A contributor",
+        "last_checked": "2026-08-21"
       }
     },
     {
@@ -72,7 +70,6 @@
         "id": "osm:node/1000002",
         "name": "A riverside foyer",
         "why": "Same building, different place entirely: you get the river and none of the noise.",
-        "verified": false,
         "spot": "the benches outside",
         "payment_to_enter": "none",
         "payment_to_sit": "none",
@@ -80,7 +77,8 @@
         "seating": "fixed",
         "conversation": "possible",
         "activity": "possible",
-        "setting": "outdoor"
+        "setting": "outdoor",
+        "last_checked": "2026-08-20"
       }
     }
   ]

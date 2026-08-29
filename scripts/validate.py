@@ -6,7 +6,7 @@ Five checks, in the order a contributor meets them:
   2. every feature passes the four eligibility gates
   3. every feature sits inside data/boundary.geojson
   4. no id and spot pair appears twice
-  5. why is present and stays a sentence, and verified carries a date
+  5. why is present and stays a sentence, and every entry carries a date
 
 Checks 1, 2 and 5 are expressed in the schema, so the schema stays the single
 source of truth; this file turns a JSON Schema error into a sentence someone
@@ -21,6 +21,7 @@ Exit code is 0 if the corpus is clean and 1 if it is not.
 """
 
 import argparse
+import datetime
 import json
 import os
 import sys
@@ -40,9 +41,8 @@ FIELD_HINTS = {
         "Which part of the element, when the whole of it is not the point — "
         "'top floor, by the window'. Leave it out for the place as a whole."
     ),
-    "verified_date": "Expected a date like 2026-08-27.",
+    "last_checked": "The date someone was last there. Expected something like 2026-08-27.",
     "why": "One sentence on why this place is here, up to 200 characters.",
-    "verified": "true if someone has sat there, false if it has been reviewed but not visited.",
 }
 
 
@@ -108,10 +108,10 @@ def _plain(error, field, gates):
         )
 
     if v == "required":
-        if field == "verified_date":
+        if field == "last_checked":
             return (
-                "missing. A place marked verified needs the date it was checked in "
-                "person — without one there is no way to tell how old the answer is."
+                "missing. Every entry needs the date someone was last there — without "
+                "one there is no way to tell how old the answer is."
             )
         if field == "why":
             return "missing. Every place needs its one sentence."
@@ -124,7 +124,7 @@ def _plain(error, field, gates):
     if v == "minLength":
         return "is empty."
     if v in ("pattern", "format"):
-        if field == "verified_date":
+        if field == "last_checked":
             return "%s is not a date." % json.dumps(error.instance)
         return "%s is not the expected shape." % json.dumps(error.instance)
     if v == "type":
@@ -164,6 +164,27 @@ def schema_problems(source, features):
     return problems
 
 
+def future_date_problems(source, features):
+    """A visit dated in the future is a typo. An old date is not a problem:
+    decay is off, and failing on age would erode a sparse list rather than fill it."""
+    today = datetime.date.today()
+    problems = []
+    for i, feature in enumerate(features):
+        props = (feature or {}).get("properties") or {}
+        raw = props.get("last_checked")
+        if not isinstance(raw, str):
+            continue
+        try:
+            when = datetime.date.fromisoformat(raw)
+        except ValueError:
+            continue
+        if when > today:
+            problems.append(Problem(
+                source, label_for(feature, i), "last_checked",
+                "is %s, which is in the future. Probably a typo in the year." % raw))
+    return problems
+
+
 def boundary_problems(source, features, polygons):
     problems = []
     for i, feature in enumerate(features):
@@ -175,6 +196,14 @@ def boundary_problems(source, features, polygons):
             )
             continue
         lon, lat = point
+        if lon == 0 and lat == 0:
+            # Null island: what a suggestion carries when nobody supplied coordinates.
+            problems.append(Problem(
+                source, label, None,
+                "has no coordinates yet.",
+                "A suggestion arrived without them. Find the place on openstreetmap.org "
+                "and put its position in before merging."))
+            continue
         if not geo.contains(polygons, lon, lat):
             away = geo.distance_to_boundary_m(polygons, lon, lat)
             problems.append(
@@ -259,6 +288,7 @@ def run(targets=None, boundary_path=geo.BOUNDARY_PATH):
         by_source.append((rel, features))
         problems.extend(schema_problems(rel, features))
         problems.extend(boundary_problems(rel, features, polygons))
+        problems.extend(future_date_problems(rel, features))
 
     problems.extend(duplicate_problems(by_source))
     return problems, counts

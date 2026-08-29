@@ -4,13 +4,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Suggest a place — Central London Third Places</title>
+<title>Suggest a place — Linger in London</title>
 <style>
   :root { color-scheme: light dark; --ink: #1a1a1a; --paper: #fdfdfb; --quiet: #5c5c5c;
-          --rule: #d8d8d2; --flag: #7a3b12; }
+          --rule: #d8d8d2; }
   @media (prefers-color-scheme: dark) {
-    :root { --ink: #e8e6e1; --paper: #161614; --quiet: #a3a099; --rule: #34322e; --flag: #d9a273; }
+    :root { --ink: #e8e6e1; --paper: #161614; --quiet: #a3a099; --rule: #34322e; }
   }
+  * { box-sizing: border-box; }
   body { background: var(--paper); color: var(--ink); margin: 0 auto; max-width: 34rem;
          padding: 2rem 1.25rem 5rem; line-height: 1.55;
          font-family: Georgia, 'Times New Roman', serif; }
@@ -24,9 +25,9 @@
           margin: 0.9rem 0; }
   .gate input { margin: 0.35rem 0 0; }
   .gate label { margin: 0; }
-  input[type=text], textarea, select { width: 100%; box-sizing: border-box; padding: 0.45rem;
-         border: 1px solid var(--rule); background: transparent; color: var(--ink);
-         font: inherit; font-size: 0.95rem; }
+  input[type=text], input[type=date], textarea, select { width: 100%;
+         box-sizing: border-box; padding: 0.45rem; border: 1px solid var(--rule);
+         background: transparent; color: var(--ink); font: inherit; font-size: 0.95rem; }
   textarea { min-height: 4.5rem; }
   .note { font-size: 0.88rem; }
   button { font: inherit; padding: 0.55rem 1.1rem; margin-top: 1.5rem; cursor: pointer;
@@ -35,17 +36,17 @@
   #result[data-shown] { display: block; }
   #letter { width: 100%; min-height: 16rem; font-family: ui-monospace, Menlo, monospace;
             font-size: 0.85rem; }
-  .aside { border-left: 2px solid var(--flag); padding-left: 0.9rem; }
 </style>
 </head>
 <body>
 <h1>Suggest a place</h1>
 <p>This is a list of central London places you can turn up to, stay a while, and pay nothing. Suggestions are read by a person before anything is published, so there is no rush and nothing goes live automatically.</p>
+<p>Please suggest places you have been to yourself. The questions below assume you have sat there — they are not answerable from a map.</p>
 <p class="note">This form sends nothing anywhere. It writes out a message for you to copy into an email, because this site has no server and collects nothing about you.</p>
 <form id="suggest">
 <fieldset>
 <legend>The four things a place has to be</legend>
-<p class="note">All four have to be true. If one of them is not, this is not the right list for the place &mdash; which is a fact about the list, not about the place.</p>
+<p class="note">All four have to be true. If one of them is not, this is not the right list for the place — which is a fact about the list, not about the place.</p>
 <div class="gate">
   <input type="checkbox" id="gate_payment_to_enter" name="gate_payment_to_enter" required>
   <label for="gate_payment_to_enter">There is nothing you have to pay to get in.</label>
@@ -66,11 +67,20 @@
 <label for="name">What is it called?</label>
 <input type="text" id="name" name="name" required>
 <label for="spot">Which part of it, if the whole place is not the point?</label>
-<p class="note">Optional &mdash; somewhere like &ldquo;top floor, by the window&rdquo;.</p>
-<input type="text" id="spot" name="spot" maxlength="60">
+<p class="note">Optional. Somewhere like “top floor, by the window” or “the benches under the canopy”. Leave empty for the place as a whole.</p>
+<input type="text" id="spot" name="spot">
 <label for="where">Where is it?</label>
-<p class="note">A street and area is plenty. An OpenStreetMap link saves a lookup, but is not expected.</p>
+<p class="note">A street and area is plenty.</p>
 <input type="text" id="where" name="where" required>
+<label for="osm_id">Its OpenStreetMap id, if you know it</label>
+<p class="note">Optional. Find the place on openstreetmap.org, click it, and the address bar shows something like /way/123456. Paste that, or the whole link. Leave it empty and it will be looked up for you.</p>
+<input type="text" id="osm_id" name="osm_id">
+<label for="coordinates">Its coordinates, if you know them</label>
+<p class="note">Optional. Two numbers, latitude first: 51.5194, -0.1270. On openstreetmap.org, right-click the spot and choose “show address”.</p>
+<input type="text" id="coordinates" name="coordinates">
+<label for="last_checked">When were you last there?</label>
+<p class="note">Places change, so a suggestion needs a date. Within the last year, please — anything older is a memory rather than a report.</p>
+<input type="date" id="last_checked" name="last_checked" min="2025-08-29" max="2026-08-29" required>
 <label for="why">Why is it here?</label>
 <p class="note">One sentence, up to 200 characters. What does this place not ask of you?</p>
 <textarea id="why" name="why" maxlength="200" required></textarea>
@@ -132,7 +142,7 @@
 </fieldset>
 <label for="suggested_by">How would you like to be credited?</label>
 <p class="note">Optional. Leave empty for no credit.</p>
-<input type="text" id="suggested_by" name="suggested_by" maxlength="60">
+<input type="text" id="suggested_by" name="suggested_by">
 <button type="submit">Write the message</button>
 </form>
 <div id="result">
@@ -141,8 +151,8 @@
 <textarea id="letter" readonly></textarea>
 </div>
 <script>
-  // The browser enforces the four gates: a required checkbox that is not ticked
-  // stops submission on its own, with no script involved.
+  // The browser enforces the gates and the date range: a required checkbox that is
+  // not ticked, or a date outside min/max, stops submission with no script involved.
   document.getElementById('suggest').addEventListener('submit', function (event) {
     event.preventDefault();
     var form = event.target;
@@ -150,26 +160,26 @@
     var support = Array.prototype.slice
       .call(form.querySelectorAll('input[name=support]:checked'))
       .map(function (el) { return el.value; });
-    var lines = [
-      'A place to suggest', '',
-      'Name: ' + value('name'),
-      'Spot: ' + (value('spot') || '(the place as a whole)'),
-      'Where: ' + value('where'), '',
-      'Why: ' + value('why'), '',
-      'I confirm all four:',
-      '  - There is nothing you have to pay to get in.',
-      '  - You can sit down without buying anything.',
-      '  - You could stay for hours without anyone minding.',
-      '  - There is somewhere to sit down.',
-      '',
-      'conversation: ' + (value('conversation') || 'not sure'),
-      'activity: ' + (value('activity') || 'not sure'),
-      'seating: ' + (value('seating') || 'not sure'),
-      'setting: ' + (value('setting') || 'not sure'),
-      '',
-      'Ways to support: ' + (support.length ? support.join(', ') : 'none that I noticed'),
-      'Credit me as: ' + (value('suggested_by') || '(no credit)')
-    ];
+    var lines = ['A place to suggest', ''];
+    lines.push('I confirm all four:');
+    lines.push('  - There is nothing you have to pay to get in.');
+    lines.push('  - You can sit down without buying anything.');
+    lines.push('  - You could stay for hours without anyone minding.');
+    lines.push('  - There is somewhere to sit down.');
+    lines.push('');
+    lines.push('What is it called? ' + (value('name') || '(not given)'));
+    lines.push('Which part of it, if the whole place is not the point? ' + (value('spot') || '(not given)'));
+    lines.push('Where is it? ' + (value('where') || '(not given)'));
+    lines.push('Its OpenStreetMap id, if you know it ' + (value('osm_id') || '(not given)'));
+    lines.push('Its coordinates, if you know them ' + (value('coordinates') || '(not given)'));
+    lines.push('When were you last there? ' + (value('last_checked') || '(not given)'));
+    lines.push('Why is it here? ' + (value('why') || '(not given)'));
+    lines.push('Conversation ' + (value('conversation') || '(not given)'));
+    lines.push('Doing your own thing ' + (value('activity') || '(not given)'));
+    lines.push('Seating ' + (value('seating') || '(not given)'));
+    lines.push('Setting ' + (value('setting') || '(not given)'));
+    lines.push('Ways to support the place, if there are any: ' + (support.length ? support.join(', ') : 'none that I noticed'));
+    lines.push('How would you like to be credited? ' + (value('suggested_by') || '(not given)'));
     var out = document.getElementById('letter');
     out.value = lines.join('\n');
     document.getElementById('result').setAttribute('data-shown', '');

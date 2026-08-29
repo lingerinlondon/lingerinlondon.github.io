@@ -11,11 +11,10 @@
         ]
       },
       "properties": {
-        "id": "osm:way/1000003",
-        "name": "A place with an invented value",
-        "why": "The conversation value here is not in the schema.",
-        "conversation": "loud",
-        "last_checked": "2026-08-20"
+        "id": "osm:way/1000012",
+        "name": "A place visited next year",
+        "why": "The year was mistyped when this was written down.",
+        "last_checked": "2126-08-20"
       }
     }
   ]

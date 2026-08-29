@@ -12,7 +12,7 @@ checked is that every gate reaches both forms, marked required.
 import os
 import sys
 
-from scripts import build_forms, schema as schema_mod
+from scripts import build_forms, form_spec, schema as schema_mod
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -47,7 +47,7 @@ def main():
     # Descriptive fields must be offered, but never as a requirement — a
     # contributor who does not know whether talking is allowed should still
     # be able to suggest the place.
-    for name in build_forms.DESCRIPTIVE:
+    for name in form_spec.DESCRIPTIVE:
         for value in schema_mod.enum_values(name) or []:
             if value not in issue:
                 failures.append("the issue form omits %s=%s" % (name, value))
@@ -57,6 +57,15 @@ def main():
         failures.append("a descriptive field is required in the email form; only gates may be")
     if not failures:
         print("ok   every descriptive value is offered, and none of them are required")
+
+    # The date question is the one the good-faith model depends on.
+    date_question = next(q for q in form_spec.questions() if q["key"] == "last_checked")
+    if date_question["label"] not in issue or date_question["label"] not in page:
+        failures.append("neither form asks when the contributor was last there")
+    elif 'type="date"' not in page or 'min="%s"' % form_spec.oldest_acceptable().isoformat() not in page:
+        failures.append("the email form does not stop a visit older than a year")
+    else:
+        print("ok   both forms ask when, and the browser refuses a visit over a year old")
 
     if build_forms.SUGGESTIONS_EMAIL not in page:
         failures.append("the email form gives no address to send the message to")

@@ -73,10 +73,10 @@ def main():
     else:
         print("ok   entries sharing an OSM id render separately, told apart by spot")
 
-    if 'class="place unverified"' not in page or "not yet visited" not in page:
-        failures.append("unverified places are not visually distinguished")
+    if "Last sat in" not in page:
+        failures.append("entries do not show when anyone was last there")
     else:
-        print("ok   unverified places are marked and set apart")
+        print("ok   every entry shows the date it was last sat in")
 
     names = re.findall(r"<h3>([^<]+)", page)
     if names != sorted(names, key=str.lower):

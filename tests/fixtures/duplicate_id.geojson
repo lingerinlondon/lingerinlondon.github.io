@@ -14,8 +14,8 @@
         "id": "osm:way/1000008",
         "name": "Entered once",
         "why": "The first of two entries naming the same spot.",
-        "verified": false,
-        "spot": "the courtyard"
+        "spot": "the courtyard",
+        "last_checked": "2026-08-20"
       }
     },
     {
@@ -31,8 +31,8 @@
         "id": "osm:way/1000008",
         "name": "Entered again",
         "why": "The second of two entries naming the same spot.",
-        "verified": false,
-        "spot": "the courtyard"
+        "spot": "the courtyard",
+        "last_checked": "2026-08-20"
       }
     }
   ]

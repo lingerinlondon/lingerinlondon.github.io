@@ -14,8 +14,8 @@
         "id": "osm:way/1000004",
         "name": "A ticketed gallery",
         "why": "Good place, but you have to buy a ticket to get in.",
-        "verified": false,
-        "payment_to_enter": "required"
+        "payment_to_enter": "required",
+        "last_checked": "2026-08-20"
       }
     }
   ]

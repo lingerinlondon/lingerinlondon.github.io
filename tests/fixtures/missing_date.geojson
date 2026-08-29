@@ -12,9 +12,8 @@
       },
       "properties": {
         "id": "osm:way/1000009",
-        "name": "Claimed as visited, with no date",
-        "why": "Marked verified but carrying no date for when that was true.",
-        "verified": true
+        "name": "A place nobody can date",
+        "why": "Somebody has been, but nobody wrote down when."
       }
     }
   ]

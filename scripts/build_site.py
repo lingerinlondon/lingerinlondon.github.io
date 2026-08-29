@@ -154,10 +154,6 @@ def render(places, gates, chips):
         "  .attrs { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0; margin: 0;",
         "           list-style: none; font-size: 0.88rem; color: var(--quiet); }",
         "  .meta { font-size: 0.85rem; color: var(--quiet); margin-top: 0.8rem; }",
-        "  .unverified { border-left: 3px solid var(--rule); padding-left: 0.9rem;",
-        "                margin-left: -1.2rem; }",
-        "  .flag { font-size: 0.8rem; color: var(--mark); text-transform: lowercase;",
-        "          letter-spacing: 0.02em; }",
         "  a { color: inherit; }",
         "  .empty { border-top: 1px solid var(--rule); padding-top: 1.5rem; }",
         "  footer { border-top: 1px solid var(--rule); margin-top: 2.5rem; padding-top: 1.2rem; }",
@@ -219,15 +215,15 @@ def render(places, gates, chips):
 
     parts += [
         '<div class="legend">',
-        "<h2>Verified and unverified</h2>",
-        "<p><strong>Verified</strong> means someone has physically sat there, and the date "
-        "says when. <strong>Unverified</strong> means a suggestion has been read and accepted "
-        "but nobody has been yet &mdash; those are marked, and set slightly apart, so the two "
-        "are never quietly mixed.</p>",
+        "<h2>Where this comes from</h2>",
+        "<p>Every place here was suggested by somebody who had been sitting in it, and read "
+        "by a person before it was listed. Each entry carries the date it was last sat in, "
+        "because places change &mdash; a cafe puts a time limit on the tables, a garden "
+        "starts locking its gate. An old date does not mean an entry is wrong. It means "
+        "nobody has been recently, and that is worth knowing rather than hiding.</p>",
         "</div>",
     ]
 
-    verified = sum(1 for p in places if p.get("verified"))
     if not places:
         parts += [
             '<div class="empty">',
@@ -238,10 +234,8 @@ def render(places, gates, chips):
             "</div>",
         ]
     else:
-        parts.append('<p class="count" id="count">%d place%s &mdash; %d verified, '
-                     '%d awaiting a visit.</p>'
-                     % (len(places), "" if len(places) == 1 else "s", verified,
-                        len(places) - verified))
+        parts.append('<p class="count" id="count">%d place%s.</p>'
+                     % (len(places), "" if len(places) == 1 else "s"))
         for place in places:
             parts.append(render_place(place, fields))
         parts.append('<p class="count"><a href="suggest.html">Suggest a place</a></p>')
@@ -305,9 +299,6 @@ DESCRIPTIVE_ORDER = ("conversation", "activity", "seating", "setting")
 
 
 def render_place(place, fields):
-    verified = bool(place.get("verified"))
-    classes = "place" if verified else "place unverified"
-
     data = []
     for name in DESCRIPTIVE_ORDER:
         value = place.get(name)
@@ -317,13 +308,11 @@ def render_place(place, fields):
     if support:
         data.append('data-support_options="%s"' % esc("|".join(support)))
 
-    out = ['<article class="%s" %s>' % (classes, " ".join(data))]
+    out = ['<article class="place" %s>' % " ".join(data)]
     name = esc(place.get("name", "Unnamed"))
     spot = place.get("spot")
     heading = name if not spot else '%s <span class="spot">&mdash; %s</span>' % (name, esc(spot))
     out.append("  <h3>%s</h3>" % heading)
-    if not verified:
-        out.append('  <p class="flag">not yet visited</p>')
     if place.get("why"):
         out.append('  <p class="why">%s</p>' % esc(place["why"]))
 
@@ -341,8 +330,8 @@ def render_place(place, fields):
     meta_bits = []
     if support:
         meta_bits.append("Ways to support: %s" % esc(", ".join(s.replace("_", " ") for s in support)))
-    if verified and place.get("verified_date"):
-        meta_bits.append("Sat in on %s" % esc(place["verified_date"]))
+    if place.get("last_checked"):
+        meta_bits.append("Last sat in %s" % esc(place["last_checked"]))
     url = osm_url(place.get("id", ""))
     if url:
         meta_bits.append('<a href="%s">On OpenStreetMap</a>' % esc(url))
