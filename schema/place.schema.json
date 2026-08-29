@@ -63,20 +63,18 @@
         "seating": {
           "type": ["string", "null"],
           "enum": ["fixed", "movable", "soft", null],
-          "description": "GATE and description at once. There must be somewhere to sit, so 'none' is not a value here; which kind it is remains useful. Movable matters more than comfortable: it is what lets people form a group.",
+          "description": "GATE and description at once. There must be somewhere to sit, so 'none' is not a value here; which kind it is remains useful. This field describes the seat, not what is in front of it — whether there is a table to put a laptop or a book on is the separate `table` field, because the two vary independently.",
           "x-gate": {
             "confirm": "There is somewhere to sit down.",
             "excluded": "nowhere to sit",
             "excluded_reason": "Somewhere you can only stand is not somewhere you can stay a while, however welcoming it is otherwise."
           },
           "x-filter": {
-            "chip": "movable seating",
-            "match": "movable",
             "label": "Seating",
             "values": {
-              "fixed": "benches or bolted seating",
-              "movable": "chairs you can move",
-              "soft": "sofas or armchairs"
+              "fixed": { "label": "benches", "help": "benches or seating bolted in place" },
+              "movable": { "label": "movable chairs", "help": "chairs you can pick up and move, which is what lets a group form" },
+              "soft": { "label": "soft seating", "help": "sofas or armchairs" }
             }
           }
         },
@@ -86,28 +84,24 @@
           "enum": ["discouraged", "possible", "expected", null],
           "description": "Whether talking is permitted. Not whether it happens.",
           "x-filter": {
-            "chip": "conversation possible",
-            "match": "possible",
             "label": "Conversation",
             "values": {
-              "discouraged": "a silent room",
-              "possible": "you can talk without being out of place",
-              "expected": "not talking would be conspicuous"
+              "discouraged": { "label": "a quiet room", "help": "people keep their voices down, or do not speak at all. Come here to not be talked to." },
+              "possible": { "label": "talking is fine", "help": "you can hold a conversation without being out of place, whether or not anyone actually is" },
+              "expected": { "label": "sociable", "help": "the point of the place is people meeting each other, and sitting in silence alone would be the conspicuous thing. A community centre coffee morning rather than a reading room." }
             }
           }
         },
         "activity": {
           "type": ["string", "null"],
           "enum": ["discouraged", "possible", "expected", null],
-          "description": "Whether doing something other than the place's nominal purpose — reading, working, drawing, waiting — is permitted.",
+          "description": "Whether you can occupy yourself here with something of your own. The three values are really about social cover: whether you would be the only one, and whether that matters.",
           "x-filter": {
-            "chip": "activity possible",
-            "match": "possible",
-            "label": "Doing your own thing",
+            "label": "Working, reading, or just sitting",
             "values": {
-              "discouraged": "you are expected to be here for the stated purpose",
-              "possible": "nobody minds what you are doing",
-              "expected": "the place is set up for it"
+              "discouraged": { "label": "not one to settle into", "help": "you would feel conspicuous getting a laptop or a sketchbook out. Somewhere people pass through, or come for one specific thing." },
+              "possible": { "label": "you can work or read", "help": "nobody takes an interest in what you are doing, though you might be the only one doing it" },
+              "expected": { "label": "people work and read here", "help": "others are visibly settled in with their own things, so you have company and cover" }
             }
           }
         },
@@ -116,26 +110,38 @@
           "enum": ["indoor", "outdoor", "covered", null],
           "description": "Shelter, which decides whether a place works in bad weather.",
           "x-filter": {
-            "chip": null,
-            "match": null,
             "label": "Setting",
             "values": {
-              "indoor": "inside a building",
-              "outdoor": "open air",
-              "covered": "outdoors but under cover"
+              "indoor": { "label": "indoor", "help": "inside a building" },
+              "outdoor": { "label": "outdoor", "help": "open air, so weather decides whether it works" },
+              "covered": { "label": "covered", "help": "outdoors but under cover — an arcade, a colonnade, a canopy" }
+            }
+          }
+        },
+
+        "table": {
+          "type": ["string", "null"],
+          "enum": ["none", "some", "most", null],
+          "description": "Whether there is a surface to put a laptop, a book or a cup on. Separate from `seating` because the two vary independently — an armchair with a side table and a hard chair at a desk are different propositions, and neither is described by the seat alone. This is the field that answers 'can I actually work here', which the rest of the schema only implies.",
+          "x-filter": {
+            "label": "Tables",
+            "values": {
+              "none": { "label": "no tables", "help": "nothing to put anything on but your lap" },
+              "some": { "label": "some tables", "help": "a few, and you may have to wait or share" },
+              "most": { "label": "tables throughout", "help": "most seats have a surface with them" }
             }
           }
         },
 
         "support_options": {
           "type": ["array", "null"],
-          "description": "Ways to give the place money if you want to. DISPLAY ONLY — never scored, never sorted on, never used to order anything. A place with none is not worse than a place with four.",
+          "description": "Ways to give the place money or time IF YOU WANT TO. Every one of these must be optional: a place where you have to buy something to stay fails the payment gates and does not belong here at all. DISPLAY ONLY — never scored, never sorted on, never used to order anything. A place with none is not worse than a place with four.",
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["cafe", "shop", "donation", "membership", "ticketed_events", "volunteering"]
+            "enum": ["cafe_or_bar", "shop", "donation", "membership", "ticketed_events", "volunteering"]
           },
-          "x-filter": { "chip": null, "match": null, "label": "Ways to support", "values": {} }
+          "x-filter": { "label": "Ways to support", "values": {} }
         },
 
         "why": {

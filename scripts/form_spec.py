@@ -20,7 +20,7 @@ from scripts import schema as schema_mod
 # age. It only governs what is accepted at the door.
 MAX_AGE_DAYS = 365
 
-DESCRIPTIVE = ("conversation", "activity", "seating", "setting")
+DESCRIPTIVE = ("conversation", "activity", "seating", "table", "setting")
 
 
 def oldest_acceptable(today=None):
@@ -111,7 +111,10 @@ def questions(schema=None):
             "kind": "dropdown",
             "label": meta.get("label", name),
             "note": None,
-            "required": False,
+            # Required, now that "not sure" is gone. An HTML select with no empty
+            # option silently reports its first value, so an optional dropdown
+            # would record answers nobody gave.
+            "required": True,
             "field": name,
             "values": meta.get("values") or {},
             "options": schema_mod.enum_values(name, schema) or [],
@@ -121,8 +124,11 @@ def questions(schema=None):
         "key": "support_options",
         "kind": "checkboxes",
         "label": "Ways to support the place, if there are any",
-        "note": ("Listed on the site and never ranked or ordered by. A place with none of "
-                 "these is not worse than a place with four."),
+        "note": ("Only tick these if they are genuinely optional — somewhere you could sit "
+                 "all afternoon and buy nothing. If you have to spend money to stay, the "
+                 "place does not belong on this list at all. Listed on the site and never "
+                 "ranked or ordered by; a place with none of these is not worse than a "
+                 "place with four."),
         "required": False,
         "field": "support_options",
         "options": schema_mod.enum_values("support_options", schema) or [],
@@ -139,7 +145,15 @@ def questions(schema=None):
 
 
 def option_label(value, described):
-    """How an enum value is written in a form, and read back out of one."""
+    """How an enum value is written in a form, and read back out of one.
+
+    `described` may be the {label, help} entry from the schema or a plain string.
+    """
+    if isinstance(described, dict):
+        parts = [described.get("label") or value]
+        if described.get("help"):
+            parts.append(described["help"])
+        described = " — ".join(parts) if len(parts) > 1 else parts[0]
     return "%s — %s" % (value, described) if described else value
 
 

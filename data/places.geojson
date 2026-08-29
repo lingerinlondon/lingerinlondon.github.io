@@ -18,7 +18,7 @@
         "activity": "possible",
         "setting": "indoor",
         "support_options": [
-          "cafe",
+          "cafe_or_bar",
           "membership"
         ],
         "why": "You can sit in various spots across the three floors and chat, read or work from your laptop.",

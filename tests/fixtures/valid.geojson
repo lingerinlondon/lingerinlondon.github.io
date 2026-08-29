@@ -25,7 +25,8 @@
           "donation",
           "shop"
         ],
-        "last_checked": "2026-08-20"
+        "last_checked": "2026-08-20",
+        "table": "most"
       }
     },
     {
@@ -50,11 +51,12 @@
         "activity": "possible",
         "setting": "indoor",
         "support_options": [
-          "cafe",
+          "cafe_or_bar",
           "membership"
         ],
         "suggested_by": "A contributor",
-        "last_checked": "2026-08-21"
+        "last_checked": "2026-08-21",
+        "table": "some"
       }
     },
     {
@@ -76,9 +78,10 @@
         "time_pressure": "none",
         "seating": "fixed",
         "conversation": "possible",
-        "activity": "possible",
+        "activity": "expected",
         "setting": "outdoor",
-        "last_checked": "2026-08-20"
+        "last_checked": "2026-08-20",
+        "table": "none"
       }
     }
   ]

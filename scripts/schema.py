@@ -32,6 +32,22 @@ def fields(schema=None):
     return schema["$defs"]["common"]["properties"]
 
 
+def value_label(field_name, value, schema=None):
+    """The short label a value is shown by, or the value itself."""
+    f = fields(schema).get(field_name) or {}
+    entry = ((f.get("x-filter") or {}).get("values") or {}).get(value)
+    if isinstance(entry, dict):
+        return entry.get("label", value)
+    return entry or value
+
+
+def value_help(field_name, value, schema=None):
+    """The longer explanation, used where there is room for one."""
+    f = fields(schema).get(field_name) or {}
+    entry = ((f.get("x-filter") or {}).get("values") or {}).get(value)
+    return entry.get("help") if isinstance(entry, dict) else None
+
+
 def enum_values(field_name, schema=None):
     """Allowed non-null values for an enum field, or None if it isn't one."""
     f = fields(schema).get(field_name)
@@ -70,6 +86,11 @@ def filters(schema=None):
     Adding a descriptive field to the schema must add a filter to the site
     without anyone editing JavaScript. This function is that promise. Gates are
     absent on purpose: every place passes them, so a chip would filter nothing.
+
+    Every value of a field is filterable, not a chosen one. A chip matching only
+    `possible` excluded places where conversation was `expected` — more possible
+    than possible — and left `discouraged` unaskable, so nobody could look for a
+    quiet room. Both were wrong in the same way.
     """
     schema = schema or load_schema()
     out = []
@@ -81,8 +102,6 @@ def filters(schema=None):
             {
                 "field": name,
                 "label": meta.get("label", name),
-                "chip": meta.get("chip"),
-                "match": meta.get("match"),
                 "values": meta.get("values", {}),
                 "multi": f.get("type") in (["array", "null"], "array"),
             }

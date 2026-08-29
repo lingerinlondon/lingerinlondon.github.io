@@ -78,41 +78,49 @@ body:
     attributes:
       label: "Conversation"
       options:
-        - "discouraged — a silent room"
-        - "possible — you can talk without being out of place"
-        - "expected — not talking would be conspicuous"
+        - "discouraged — a quiet room — people keep their voices down, or do not speak at all. Come here to not be talked to."
+        - "possible — talking is fine — you can hold a conversation without being out of place, whether or not anyone actually is"
+        - "expected — sociable — the point of the place is people meeting each other, and sitting in silence alone would be the conspicuous thing. A community centre coffee morning rather than a reading room."
   - type: dropdown
     id: activity
     attributes:
-      label: "Doing your own thing"
+      label: "Working, reading, or just sitting"
       options:
-        - "discouraged — you are expected to be here for the stated purpose"
-        - "possible — nobody minds what you are doing"
-        - "expected — the place is set up for it"
+        - "discouraged — not one to settle into — you would feel conspicuous getting a laptop or a sketchbook out. Somewhere people pass through, or come for one specific thing."
+        - "possible — you can work or read — nobody takes an interest in what you are doing, though you might be the only one doing it"
+        - "expected — people work and read here — others are visibly settled in with their own things, so you have company and cover"
   - type: dropdown
     id: seating
     attributes:
       label: "Seating"
       options:
-        - "fixed — benches or bolted seating"
-        - "movable — chairs you can move"
-        - "soft — sofas or armchairs"
+        - "fixed — benches — benches or seating bolted in place"
+        - "movable — movable chairs — chairs you can pick up and move, which is what lets a group form"
+        - "soft — soft seating — sofas or armchairs"
+  - type: dropdown
+    id: table
+    attributes:
+      label: "Tables"
+      options:
+        - "none — no tables — nothing to put anything on but your lap"
+        - "some — some tables — a few, and you may have to wait or share"
+        - "most — tables throughout — most seats have a surface with them"
   - type: dropdown
     id: setting
     attributes:
       label: "Setting"
       options:
-        - "indoor — inside a building"
-        - "outdoor — open air"
-        - "covered — outdoors but under cover"
+        - "indoor — indoor — inside a building"
+        - "outdoor — outdoor — open air, so weather decides whether it works"
+        - "covered — covered — outdoors but under cover — an arcade, a colonnade, a canopy"
   - type: checkboxes
     id: support_options
     attributes:
       label: "Ways to support the place, if there are any"
       description: >-
-        Listed on the site and never ranked or ordered by. A place with none of these is not worse than a place with four.
+        Only tick these if they are genuinely optional — somewhere you could sit all afternoon and buy nothing. If you have to spend money to stay, the place does not belong on this list at all. Listed on the site and never ranked or ordered by; a place with none of these is not worse than a place with four.
       options:
-        - label: "cafe"
+        - label: "cafe or bar"
         - label: "shop"
         - label: "donation"
         - label: "membership"

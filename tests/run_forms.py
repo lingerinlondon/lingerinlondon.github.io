@@ -124,10 +124,17 @@ def main():
                 failures.append("the issue form omits %s=%s" % (name, value))
             if value not in page:
                 failures.append("the email form omits %s=%s" % (name, value))
-    if 'name="conversation" required' in page:
-        failures.append("a descriptive field is required in the email form; only gates may be")
+    # Descriptive fields are required now that "not sure" is gone. An HTML
+    # select with no empty option silently reports its first value, so an
+    # optional dropdown would record answers nobody actually gave.
+    for name in form_spec.DESCRIPTIVE:
+        if 'name="%s" required' % name not in page:
+            failures.append("%s is not required in the email form, so it could be "
+                            "answered by accident" % name)
+    if "not sure" in page:
+        failures.append("the email form still offers 'not sure', which leaves a hole in an entry")
     if not failures:
-        print("ok   every descriptive value is offered, and none of them are required")
+        print("ok   every descriptive value is offered, and each must be answered deliberately")
 
     # The date question is the one the good-faith model depends on.
     date_question = next(q for q in form_spec.questions() if q["key"] == "last_checked")

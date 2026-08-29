@@ -84,6 +84,18 @@ GEOMETRY_COLUMNS = ("lat", "lon")
 
 SKIP_VALUES = ("", "-", "n/a", "na", "?", "unknown", "tbd")
 
+# Nobody writing on a bench writes "cafe_or_bar".
+SUPPORT_SHORTHAND = {
+    "cafe": "cafe_or_bar", "bar": "cafe_or_bar", "pub": "cafe_or_bar",
+    "coffee": "cafe_or_bar", "restaurant": "cafe_or_bar", "canteen": "cafe_or_bar",
+    "gift_shop": "shop", "bookshop": "shop", "shop": "shop",
+    "donations": "donation", "donation": "donation", "box": "donation",
+    "friends": "membership", "membership": "membership", "member": "membership",
+    "events": "ticketed_events", "tickets": "ticketed_events",
+    "ticketed_events": "ticketed_events",
+    "volunteer": "volunteering", "volunteering": "volunteering",
+}
+
 
 def normalise_key(key):
     k = (key or "").strip().lower().replace("-", "_").replace(" ", "_")
@@ -115,6 +127,7 @@ def coerce(field, raw, fields):
             if not part:
                 continue
             key = part.lower().replace(" ", "_")
+            key = SUPPORT_SHORTHAND.get(key, key)
             if key not in allowed:
                 raise RowProblem(
                     "support_options: %r is not one of %s" % (part, ", ".join(allowed))

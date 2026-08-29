@@ -108,16 +108,37 @@ def load_places(path):
     return sorted(places, key=lambda p: (p.get("name") or "").lower())
 
 
-def chip_definitions():
-    """Filter chips, derived from the schema's x-filter metadata."""
+def chip_definitions(places=None):
+    """Filter chips, derived from the schema, narrowed to what the corpus holds.
+
+    Every value of a filterable field gets a chip — filtering for one value and
+    silently excluding a stronger one was a bug, not a simplification.
+
+    A chip is only drawn if some place actually has that value. A chip that can
+    only ever return nothing is a promise the list cannot keep, and at forty
+    places most values will be unused for a while.
+    """
+    present = None
+    if places is not None:
+        present = {}
+        for place in places:
+            for field, value in place.items():
+                if isinstance(value, str):
+                    present.setdefault(field, set()).add(value)
+
     chips = []
     for f in schema_mod.filters():
-        if f["chip"]:
-            chips.append({"field": f["field"], "match": f["match"], "label": f["chip"]})
-        elif f["values"]:
-            for value, described in f["values"].items():
-                chips.append({"field": f["field"], "match": value, "label": value,
-                              "title": described})
+        if not f["values"]:
+            continue
+        for value in f["values"]:
+            if present is not None and value not in present.get(f["field"], ()):
+                continue
+            chips.append({
+                "field": f["field"],
+                "match": value,
+                "label": schema_mod.value_label(f["field"], value),
+                "title": schema_mod.value_help(f["field"], value),
+            })
     return chips
 
 
@@ -217,14 +238,9 @@ def render(places, gates, chips):
         # Fields offering one chip share a row; fields offering a set of values
         # get their own labelled group, so "indoor / outdoor / covered" reads as
         # a choice rather than three unrelated toggles.
-        singles = [g[0] for g in grouped.values() if len(g) == 1]
-        for chip in singles:
-            parts.append(button(chip))
         parts.append("</ul>")
 
         for field, group in grouped.items():
-            if len(group) == 1:
-                continue
             label = (fields[field].get("x-filter") or {}).get("label", field)
             parts.append('<div class="group"><span class="group-label">%s</span>' % esc(label))
             parts.append('<ul class="chips">')
@@ -316,7 +332,7 @@ def render(places, gates, chips):
     return "\n".join(parts)
 
 
-DESCRIPTIVE_ORDER = ("conversation", "activity", "seating", "setting")
+DESCRIPTIVE_ORDER = ("conversation", "activity", "seating", "table", "setting")
 
 
 def render_place(place, fields):
@@ -342,9 +358,10 @@ def render_place(place, fields):
         value = place.get(field)
         if not value:
             continue
-        meta = fields[field].get("x-filter") or {}
-        described = (meta.get("values") or {}).get(value, value)
-        attrs.append("<li>%s</li>" % esc(described))
+        label = schema_mod.value_label(field, value)
+        note = schema_mod.value_help(field, value)
+        title = ' title="%s"' % esc(note) if note else ""
+        attrs.append("<li%s>%s</li>" % (title, esc(label)))
     if attrs:
         out.append('  <ul class="attrs">%s</ul>' % "".join(attrs))
 
@@ -372,13 +389,13 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     places = load_places(args.places)
-    page = render(places, schema_mod.gates(), chip_definitions())
+    page = render(places, schema_mod.gates(), chip_definitions(places))
     with open(args.out, "w") as fh:
         fh.write(page)
     copied = copy_alongside(os.path.dirname(os.path.abspath(args.out)))
     print("wrote %s — %d place%s, %d filter chips, %d file%s published alongside"
           % (os.path.relpath(args.out, ROOT), len(places),
-             "" if len(places) == 1 else "s", len(chip_definitions()),
+             "" if len(places) == 1 else "s", len(chip_definitions(places)),
              copied, "" if copied == 1 else "s"))
     return 0
 

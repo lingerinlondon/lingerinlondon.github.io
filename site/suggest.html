@@ -91,39 +91,46 @@
 <p class="note">One sentence, up to 200 characters. Why does this place feel like a comfortable place to just ‘be’ in London?</p>
 <textarea id="why" name="why" maxlength="200" required></textarea>
 <label for="conversation">Conversation</label>
-<select id="conversation" name="conversation">
-  <option value="">not sure</option>
-  <option value="discouraged">discouraged — a silent room</option>
-  <option value="possible">possible — you can talk without being out of place</option>
-  <option value="expected">expected — not talking would be conspicuous</option>
+<select id="conversation" name="conversation" required>
+  <option value="" disabled selected>choose one</option>
+  <option value="discouraged">discouraged — a quiet room — people keep their voices down, or do not speak at all. Come here to not be talked to.</option>
+  <option value="possible">possible — talking is fine — you can hold a conversation without being out of place, whether or not anyone actually is</option>
+  <option value="expected">expected — sociable — the point of the place is people meeting each other, and sitting in silence alone would be the conspicuous thing. A community centre coffee morning rather than a reading room.</option>
 </select>
-<label for="activity">Doing your own thing</label>
-<select id="activity" name="activity">
-  <option value="">not sure</option>
-  <option value="discouraged">discouraged — you are expected to be here for the stated purpose</option>
-  <option value="possible">possible — nobody minds what you are doing</option>
-  <option value="expected">expected — the place is set up for it</option>
+<label for="activity">Working, reading, or just sitting</label>
+<select id="activity" name="activity" required>
+  <option value="" disabled selected>choose one</option>
+  <option value="discouraged">discouraged — not one to settle into — you would feel conspicuous getting a laptop or a sketchbook out. Somewhere people pass through, or come for one specific thing.</option>
+  <option value="possible">possible — you can work or read — nobody takes an interest in what you are doing, though you might be the only one doing it</option>
+  <option value="expected">expected — people work and read here — others are visibly settled in with their own things, so you have company and cover</option>
 </select>
 <label for="seating">Seating</label>
-<select id="seating" name="seating">
-  <option value="">not sure</option>
-  <option value="fixed">fixed — benches or bolted seating</option>
-  <option value="movable">movable — chairs you can move</option>
-  <option value="soft">soft — sofas or armchairs</option>
+<select id="seating" name="seating" required>
+  <option value="" disabled selected>choose one</option>
+  <option value="fixed">fixed — benches — benches or seating bolted in place</option>
+  <option value="movable">movable — movable chairs — chairs you can pick up and move, which is what lets a group form</option>
+  <option value="soft">soft — soft seating — sofas or armchairs</option>
+</select>
+<label for="table">Tables</label>
+<select id="table" name="table" required>
+  <option value="" disabled selected>choose one</option>
+  <option value="none">none — no tables — nothing to put anything on but your lap</option>
+  <option value="some">some — some tables — a few, and you may have to wait or share</option>
+  <option value="most">most — tables throughout — most seats have a surface with them</option>
 </select>
 <label for="setting">Setting</label>
-<select id="setting" name="setting">
-  <option value="">not sure</option>
-  <option value="indoor">indoor — inside a building</option>
-  <option value="outdoor">outdoor — open air</option>
-  <option value="covered">covered — outdoors but under cover</option>
+<select id="setting" name="setting" required>
+  <option value="" disabled selected>choose one</option>
+  <option value="indoor">indoor — indoor — inside a building</option>
+  <option value="outdoor">outdoor — outdoor — open air, so weather decides whether it works</option>
+  <option value="covered">covered — covered — outdoors but under cover — an arcade, a colonnade, a canopy</option>
 </select>
 <fieldset>
 <legend>Ways to support the place, if there are any</legend>
-<p class="note">Listed on the site and never ranked or ordered by. A place with none of these is not worse than a place with four.</p>
+<p class="note">Only tick these if they are genuinely optional — somewhere you could sit all afternoon and buy nothing. If you have to spend money to stay, the place does not belong on this list at all. Listed on the site and never ranked or ordered by; a place with none of these is not worse than a place with four.</p>
 <div class="gate">
-  <input type="checkbox" id="s_cafe" name="support" value="cafe">
-  <label for="s_cafe">cafe</label>
+  <input type="checkbox" id="s_cafe_or_bar" name="support" value="cafe_or_bar">
+  <label for="s_cafe_or_bar">cafe or bar</label>
 </div>
 <div class="gate">
   <input type="checkbox" id="s_shop" name="support" value="shop">
@@ -181,8 +188,9 @@
     lines.push('When were you last there? ' + (value('last_checked') || '(not given)'));
     lines.push('Why is it here? ' + (value('why') || '(not given)'));
     lines.push('Conversation ' + (value('conversation') || '(not given)'));
-    lines.push('Doing your own thing ' + (value('activity') || '(not given)'));
+    lines.push('Working, reading, or just sitting ' + (value('activity') || '(not given)'));
     lines.push('Seating ' + (value('seating') || '(not given)'));
+    lines.push('Tables ' + (value('table') || '(not given)'));
     lines.push('Setting ' + (value('setting') || '(not given)'));
     lines.push('Ways to support the place, if there are any: ' + (support.length ? support.join(', ') : 'none that I noticed'));
     lines.push('How would you like to be credited? ' + (value('suggested_by') || '(not given)'));

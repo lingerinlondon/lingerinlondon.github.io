@@ -22,14 +22,23 @@ ANSWERS = {
     "coordinates": "51.5200, -0.0937",
     "last_checked": "12/08/2026",
     "why": "Warm, humid and almost empty on a weekday, with benches nobody asks you to leave.",
-    "conversation": "possible — you can talk without being out of place",
-    "activity": "expected — the place is set up for it",
-    "seating": "fixed — benches or bolted seating",
-    "setting": "indoor — inside a building",
+    "conversation": None,   # filled from the schema below, so wording cannot drift
+    "activity": None,
+    "seating": None,
+    "setting": None,
+    "table": None,
     "suggested_by": "A. Contributor",
 }
 TICKED_SUPPORT = ("donation", "shop")
 TODAY = datetime.date(2026, 8, 29)
+
+# Which value each dropdown is answered with, written exactly as the form
+# renders it. Taken from the schema so a reworded option cannot silently pass.
+CHOSEN = {"conversation": "possible", "activity": "expected",
+          "seating": "fixed", "setting": "indoor", "table": "some"}
+for _field, _value in CHOSEN.items():
+    ANSWERS[_field] = form_spec.option_label(
+        _value, (schema_mod.fields()[_field].get("x-filter") or {}).get("values", {}).get(_value))
 
 
 def build_body(overrides=None):
@@ -67,6 +76,7 @@ def main():
         "activity": "expected",
         "seating": "fixed",
         "setting": "indoor",
+        "table": "some",
         "last_checked": "2026-08-12",
         "suggested_by": "A. Contributor",
     }

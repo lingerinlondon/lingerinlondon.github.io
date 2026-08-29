@@ -224,8 +224,11 @@ def build_html_form():
             parts.append('<textarea id="%s" name="%s" maxlength="200"%s></textarea>'
                          % (key, key, required))
         elif q["kind"] == "dropdown":
-            parts.append('<select id="%s" name="%s">' % (key, key))
-            parts.append('  <option value="">not sure</option>')
+            parts.append('<select id="%s" name="%s"%s>' % (key, key, required))
+            # No "not sure": it produced entries with a hole in them, and someone
+            # suggesting a place has been there. But a select must still open on
+            # nothing, or it silently reports its first option as an answer.
+            parts.append('  <option value="" disabled selected>choose one</option>')
             for value in q["options"]:
                 parts.append('  <option value="%s">%s</option>'
                              % (esc(value),

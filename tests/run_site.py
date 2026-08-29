@@ -34,19 +34,40 @@ def main():
     failures = []
     page = build(FIX)
 
-    chips = re.findall(r'data-field="([^"]+)" data-match="([^"]+)"', page)
-    expected = set()
+    chips = set(re.findall(r'data-field="([^"]+)" data-match="([^"]+)"', page))
+
+    # Every chip must come from the schema...
+    allowed = set()
     for f in schema_mod.filters():
-        if f["chip"]:
-            expected.add((f["field"], f["match"]))
-        elif f["values"]:
-            for value in f["values"]:
-                expected.add((f["field"], value))
-    if set(chips) != expected:
-        failures.append("chips do not match the schema.\n  page: %s\n  schema: %s"
-                        % (sorted(set(chips)), sorted(expected)))
+        for value in f["values"]:
+            allowed.add((f["field"], value))
+    invented = chips - allowed
+    if invented:
+        failures.append("chips not in the schema: %s" % sorted(invented))
     else:
         print("ok   all %d filter chips derive from the schema" % len(chips))
+
+    # ...and every chip must be able to return something. A chip that always
+    # returns nothing is a promise the list cannot keep.
+    import json as _json
+    corpus = [f["properties"] for f in _json.load(open(FIX))["features"]]
+    reachable = set()
+    for place in corpus:
+        for field, value in place.items():
+            if isinstance(value, str):
+                reachable.add((field, value))
+    unusable = chips - reachable
+    if unusable:
+        failures.append("chips that can never match anything: %s" % sorted(unusable))
+    else:
+        print("ok   every chip matches at least one place in the corpus")
+
+    # ...and every value the corpus actually holds must be filterable.
+    missing = (reachable & allowed) - chips
+    if missing:
+        failures.append("values present in the corpus with no chip: %s" % sorted(missing))
+    else:
+        print("ok   every filterable value the corpus holds has a chip")
 
     gate_fields = {g["field"] for g in schema_mod.gates()}
     offered_as_filter = gate_fields & {c[0] for c in chips}
