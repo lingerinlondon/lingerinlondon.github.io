@@ -95,11 +95,11 @@
         "activity": {
           "type": ["string", "null"],
           "enum": ["discouraged", "possible", "expected", null],
-          "description": "Whether you can occupy yourself here with something of your own. The three values are really about social cover: whether you would be the only one, and whether that matters.",
+          "description": "Whether you can occupy yourself here with something of your own. Not the same question as the time_pressure gate: a church passes that gate easily — nobody will move you on after two hours — while still being somewhere you would not open a laptop. Staying is about what the place demands; this is about what is in keeping once you have stayed. The three values turn on social cover: whether you would be the only one, and whether that matters.",
           "x-filter": {
             "label": "Working, reading, or just sitting",
             "values": {
-              "discouraged": { "label": "not one to settle into", "help": "you would feel conspicuous getting a laptop or a sketchbook out. Somewhere people pass through, or come for one specific thing." },
+              "discouraged": { "label": "for sitting, not working", "help": "you can stay as long as you like, but getting a laptop or a sketchbook out would feel out of keeping — a church interior, a memorial garden, a bench in front of a painting. Somewhere to be rather than to do." },
               "possible": { "label": "you can work or read", "help": "nobody takes an interest in what you are doing, though you might be the only one doing it" },
               "expected": { "label": "people work and read here", "help": "others are visibly settled in with their own things, so you have company and cover" }
             }
