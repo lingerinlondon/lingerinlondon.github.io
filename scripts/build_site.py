@@ -135,6 +135,7 @@ def render(places, gates, chips):
         "          letter-spacing: 0.02em; }",
         "  a { color: inherit; }",
         "  .empty { border-top: 1px solid var(--rule); padding-top: 1.5rem; }",
+        "  footer { border-top: 1px solid var(--rule); margin-top: 2.5rem; padding-top: 1.2rem; }",
         "</style>",
         "</head>",
         "<body>",
@@ -220,6 +221,16 @@ def render(places, gates, chips):
         for place in places:
             parts.append(render_place(place, fields))
         parts.append('<p class="count"><a href="suggest.html">Suggest a place</a></p>')
+
+    parts += [
+        "<footer>",
+        '<p class="count">The whole list is <a href="data/places.geojson">a GeoJSON file</a> '
+        'you can download, fork or load into anything else, described by '
+        '<a href="schema/place.schema.json">its schema</a>. The project boundary is '
+        '<a href="data/boundary.geojson">here</a>. Everything is CC0 &mdash; no permission '
+        "needed.</p>",
+        "</footer>",
+    ]
 
     parts += [
         "<script>",

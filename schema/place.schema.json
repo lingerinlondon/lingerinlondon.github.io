@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/cormac/central-london-third-places/schema/place.schema.json",
+  "$id": "https://lingerinlondon.github.io/schema/place.schema.json",
   "title": "Central London Third Places — place properties, v0",
   "description": "Single source of truth for fields. The validator, the contribution forms and the site's filters all derive from this file; nothing may hand-maintain a second list of fields elsewhere.",
 

@@ -18,3 +18,5 @@ docs/
 # Generated at deploy time from the schema and the corpus, so that adding a
 # place is a one-file change. Build it locally with: python -m scripts.build_site
 site/index.html
+site/data/
+site/schema/
