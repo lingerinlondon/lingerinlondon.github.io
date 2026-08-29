@@ -135,6 +135,22 @@ def main():
         else:
             print("ok   a question renamed out from under the parser fails loudly")
 
+    # An ordinary issue must be ignored, not misread as a place.
+    for label, body in [
+        ("an empty issue", ""),
+        ("a bug report", "The site looks wrong on my phone.\n\n### Steps\n\n1. Open it"),
+    ]:
+        try:
+            issue_to_place.convert(body, TODAY)
+        except issue_to_place.NotASuggestion:
+            pass
+        except issue_to_place.Rejected as exc:
+            failures.append("%s was answered as a rejected suggestion: %s" % (label, exc))
+        else:
+            failures.append("%s was turned into a place" % label)
+    if not failures:
+        print("ok   issues that are not suggestions are left alone entirely")
+
     if failures:
         print("\n%d suggestion check(s) failed:\n" % len(failures))
         for f in failures:

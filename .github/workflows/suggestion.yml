@@ -19,7 +19,10 @@ permissions:
 
 jobs:
   to-pull-request:
-    if: contains(github.event.issue.labels.*.name, 'suggestion')
+    # No label condition. GitHub only applies a template's labels if the label
+    # already exists in the repository, so depending on one made this whole job
+    # skip in silence when it did not. Whether an issue is a suggestion is
+    # decided by reading it, which is the only thing that actually knows.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +48,8 @@ jobs:
             --notes /tmp/notes.md 2>/tmp/error.txt
           echo "status=$?" >> "$GITHUB_OUTPUT"
           set -e
+
+      # Exit 3 means the issue was not a suggestion. Nothing to say about it.
 
       # A rejection is a reply to a person, not a failed build. Say why, plainly.
       - name: Explain why it cannot be accepted

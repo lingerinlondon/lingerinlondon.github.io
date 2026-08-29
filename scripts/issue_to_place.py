@@ -37,6 +37,21 @@ class Rejected(Exception):
     """The suggestion cannot become an entry, and the contributor should be told why."""
 
 
+class NotASuggestion(Exception):
+    """This issue is not a suggestion at all. Nothing to say, nothing to do."""
+
+
+def looks_like_a_suggestion(sections):
+    """Is this issue the suggestion form, or somebody reporting a bug?
+
+    Decided here rather than by a label on the issue, because GitHub only
+    applies a template's labels if the label already exists, and a missing
+    label made the whole workflow skip in silence.
+    """
+    labels = {q["label"] for q in form_spec.questions()}
+    return len(labels & set(sections)) >= 3
+
+
 def parse_body(body):
     """Split a GitHub issue-form body into {question label: answer}."""
     sections = {}
@@ -111,6 +126,8 @@ def parse_date(text, today=None):
 def convert(body, today=None):
     """Issue body -> (feature, notes). Raises Rejected if it cannot be one."""
     sections = parse_body(body)
+    if not looks_like_a_suggestion(sections):
+        raise NotASuggestion()
     questions = {q["label"]: q for q in form_spec.questions()}
 
     missing_labels = [label for label in questions if label not in sections]
@@ -195,6 +212,9 @@ def main(argv=None):
     body = open(args.body).read()
     try:
         feature, notes = convert(body)
+    except NotASuggestion:
+        sys.stderr.write("Not a suggestion issue. Nothing to do.\n")
+        return 3
     except Rejected as exc:
         sys.stderr.write("REJECTED: %s\n" % exc)
         if args.notes:
