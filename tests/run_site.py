@@ -99,6 +99,29 @@ def main():
     else:
         print("ok   every entry shows the date it was last sat in")
 
+    # The list comes first. Provenance is worth reading, but after the thing
+    # someone came for, and the invitation sits between the two.
+    where = {name: page.find(marker) for name, marker in [
+        ("the list", '<article class="place"'),
+        ("the invitation", '<div class="suggest">'),
+        ("the provenance note", '<div class="legend">'),
+        ("the footer", "<footer>"),
+    ]}
+    missing = [n for n, i in where.items() if i == -1]
+    if missing:
+        failures.append("the page is missing: %s" % ", ".join(missing))
+    elif sorted(where, key=where.get) != ["the list", "the invitation",
+                                          "the provenance note", "the footer"]:
+        failures.append("the page is in the wrong order: %s"
+                        % ", ".join(sorted(where, key=where.get)))
+    else:
+        print("ok   list, then the invitation, then where it comes from")
+
+    if 'class="suggest"' not in page or "suggest.html" not in page:
+        failures.append("there is no visible way to suggest a place")
+    else:
+        print("ok   suggesting a place is offered as its own block, not a footnote")
+
     names = re.findall(r"<h3>([^<]+)", page)
     if names != sorted(names, key=str.lower):
         failures.append("places are not in alphabetical order: %s" % names)

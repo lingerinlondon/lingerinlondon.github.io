@@ -194,6 +194,12 @@ def render(places, gates, chips):
         "  .meta { font-size: 0.85rem; color: var(--quiet); margin-top: 0.8rem; }",
         "  a { color: inherit; }",
         "  .empty { border-top: 1px solid var(--rule); padding-top: 1.5rem; }",
+        "  .suggest { border: 1px solid var(--ink); padding: 1.3rem 1.4rem; margin: 3rem 0 2rem; }",
+        "  .suggest p { color: var(--ink); margin: 0; }",
+        "  .suggest p + p { margin-top: 1rem; }",
+        "  .suggest a { display: inline-block; padding: 0.55rem 1.2rem; text-decoration: none;",
+        "               border: 1px solid var(--ink); }",
+        "  .suggest a:hover, .suggest a:focus { background: var(--ink); color: var(--paper); }",
         "  footer { border-top: 1px solid var(--rule); margin-top: 2.5rem; padding-top: 1.2rem; }",
         "  footer .note { color: var(--quiet); font-size: 0.9rem; }",
         "  sup a { text-decoration: none; padding: 0 0.1em; }",
@@ -249,7 +255,26 @@ def render(places, gates, chips):
             parts.append("</ul></div>")
         parts.append("</div>")
 
+
+    if not places:
+        parts += [
+            '<div class="empty">',
+            "<p>No places listed yet. The corpus fills up on foot, one visit at a time, "
+            "and nothing goes in that nobody has sat in.</p>",
+            "</div>",
+        ]
+    else:
+        parts.append('<p class="count" id="count">%d place%s.</p>'
+                     % (len(places), "" if len(places) == 1 else "s"))
+        for place in places:
+            parts.append(render_place(place, fields))
+
     parts += [
+        '<div class="suggest">',
+        "<p>Know somewhere in central London that clears all four? The list only grows by "
+        "people adding places they have sat in themselves.</p>",
+        '<p><a href="suggest.html">Suggest a place</a></p>',
+        "</div>",
         '<div class="legend">',
         "<h2>Where this comes from</h2>",
         "<p>Every place here was suggested by somebody who had been sitting in it, and read "
@@ -258,25 +283,6 @@ def render(places, gates, chips):
         "starts locking its gate. An old date does not mean an entry is wrong. It means "
         "nobody has been recently, and that is worth knowing rather than hiding.</p>",
         "</div>",
-    ]
-
-    if not places:
-        parts += [
-            '<div class="empty">',
-            "<p>No places listed yet. The corpus fills up on foot, one visit at a time, "
-            "and nothing goes in that nobody has sat in.</p>",
-            '<p>If you know somewhere that meets all four, <a href="suggest.html">suggest '
-            "it</a>.</p>",
-            "</div>",
-        ]
-    else:
-        parts.append('<p class="count" id="count">%d place%s.</p>'
-                     % (len(places), "" if len(places) == 1 else "s"))
-        for place in places:
-            parts.append(render_place(place, fields))
-        parts.append('<p class="count"><a href="suggest.html">Suggest a place</a></p>')
-
-    parts += [
         "<footer>",
         '<p class="note" id="scope"><sup>1</sup> %s</p>' % SCOPE_NOTE,
         '<p class="count">The whole list is <a href="data/places.geojson">a GeoJSON file</a> '
