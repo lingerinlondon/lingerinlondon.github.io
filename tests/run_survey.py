@@ -10,7 +10,7 @@ import os
 import sys
 import tempfile
 
-from scripts import survey_import, validate
+from scripts import schema as schema_mod, survey_import, validate
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEN = os.path.join(HERE, "fixtures", "survey_ten_rows.csv")
@@ -43,6 +43,26 @@ SHORTHAND = [
 
 def main():
     failures = []
+
+    # The blank sheet must offer a column for every field. It once fell two
+    # fields behind, and a column missing from the sheet is a question nobody
+    # thinks to answer while sitting there.
+    columns = survey_import.template_columns()
+    absent = [f for f in schema_mod.fields() if f not in columns and f != "last_checked"]
+    if absent:
+        failures.append("the blank capture sheet has no column for: %s" % ", ".join(absent))
+    elif "date" not in columns:
+        failures.append("the capture sheet has no date column")
+    else:
+        print("ok   the blank sheet has a column for every field in the schema")
+
+    # And every column on it must be one the importer understands.
+    unknown = [c for c in columns
+               if survey_import.normalise_key(c) not in set(schema_mod.fields()) | {"lat", "lon"}]
+    if unknown:
+        failures.append("the sheet offers columns the importer ignores: %s" % ", ".join(unknown))
+    else:
+        print("ok   every column on the sheet is one the importer reads")
 
     rows = survey_import.read_rows(TEN)
     features, problems = survey_import.convert(rows)

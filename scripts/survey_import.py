@@ -57,6 +57,9 @@ SYNONYMS = {
                 "chairs": "movable", "loose": "movable", "moveable": "movable",
                 "sofa": "soft", "sofas": "soft", "armchairs": "soft",
                 "no": "none", "n": "none", "nowhere": "none", "standing": "none"},
+    "table": {"no": "none", "n": "none", "none": "none", "nothing": "none", "lap": "none",
+              "some": "some", "few": "some", "a_few": "some", "yes": "some", "y": "some",
+              "most": "most", "all": "most", "every": "most", "throughout": "most"},
     "setting": {"in": "indoor", "inside": "indoor", "internal": "indoor",
                 "out": "outdoor", "outside": "outdoor", "open": "outdoor",
                 "arcade": "covered", "sheltered": "covered", "under cover": "covered"},
@@ -74,6 +77,7 @@ COLUMN_ALIASES = {
     "support": "support_options", "support_options": "support_options",
     "lat": "lat", "latitude": "lat", "lon": "lon", "lng": "lon", "long": "lon",
     "longitude": "lon",
+    "tables": "table", "desk": "table", "desks": "table", "surface": "table",
     "payment_enter": "payment_to_enter", "entry": "payment_to_enter",
     "payment_sit": "payment_to_sit", "sit": "payment_to_sit",
     "pressure": "time_pressure", "time": "time_pressure",
@@ -268,21 +272,36 @@ def convert(rows, default_date=None):
     return features, problems
 
 
-TEMPLATE_COLUMNS = [
-    "id", "name", "spot", "lat", "lon", "date", "payment_to_enter", "payment_to_sit",
-    "time_pressure", "conversation", "activity", "seating", "setting",
-    "support_options", "why",
-]
+# Derived from the schema rather than typed out. The hand-written version had
+# already fallen two fields behind, which is the exact failure the single-source
+# rule exists to prevent — and a column missing from the sheet is a question you
+# never think to answer on the bench.
+FIRST_COLUMNS = ["id", "name", "spot", "lat", "lon", "date"]
+COVERED_BY_FIRST = {"id", "name", "spot", "last_checked"}
+
+EXAMPLE_ROW = {
+    "id": "osm:way/123456", "name": "The place", "spot": "top floor, by the window",
+    "lat": "51.5194", "lon": "-0.1270", "date": "2026-08-27",
+    "payment_to_enter": "free", "payment_to_sit": "free", "time_pressure": "no",
+    "seating": "chairs", "conversation": "quiet", "activity": "yes", "setting": "in",
+    "table": "some", "support_options": "cafe,donation",
+    "why": "One sentence on why this is here.", "suggested_by": "",
+}
+
+
+def template_columns():
+    columns = list(FIRST_COLUMNS)
+    for field in schema_mod.fields():
+        if field not in COVERED_BY_FIRST:
+            columns.append(field)
+    return columns
 
 
 def print_template():
+    columns = template_columns()
     writer = csv.writer(sys.stdout)
-    writer.writerow(TEMPLATE_COLUMNS)
-    writer.writerow([
-        "osm:way/123456", "The place", "top floor, by the window", "51.5194", "-0.1270", "2026-08-27",
-        "free", "free", "no", "quiet", "yes", "chairs", "in", "cafe,donation",
-        "One sentence on why this is here.",
-    ])
+    writer.writerow(columns)
+    writer.writerow([EXAMPLE_ROW.get(c, "") for c in columns])
 
 
 def main(argv=None):
