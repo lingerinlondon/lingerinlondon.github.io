@@ -32,5 +32,8 @@ jobs:
       - name: Check the contribution forms still match the schema
         run: python -m tests.run_forms
 
+      - name: Check the reading surface
+        run: python -m tests.run_site
+
       - name: Check the survey importer
         run: python -m tests.run_survey

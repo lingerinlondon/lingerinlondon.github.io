@@ -1,6 +1,29 @@
 # The reading surface
 
-`suggest.html` is built. The list itself is not, and is the next thing.
+Two pages, both generated. Neither should be edited by hand.
+
+## index.html — the list
+
+Built by `scripts/build_site.py` from the schema and `data/places.geojson`.
+**Not committed**: the deploy workflow generates it. That way adding a place is
+a one-file change, and a contributor's pull request can never fail on a build
+artefact they had no way of regenerating. Build it locally to look at it:
+
+```bash
+python3 -m scripts.build_site
+```
+
+Everything on it is decided by the schema. Filter chips come from `x-filter` —
+a field with a `chip` becomes one toggle, a field with `values` becomes a group
+of them — so adding a filterable field adds chips without anyone editing
+JavaScript. The four gates come from `x-gate` and are deliberately *not*
+filters: every place passes them, so a chip would filter nothing. They are the
+masthead instead.
+
+The whole list is in the HTML. JavaScript only hides rows when a chip is
+pressed, so with scripting off you get every place and no filtering, which is
+the right way round. No map, no tiles, no fonts to fetch, nothing that reaches
+a third party — `tests/run_site.py` fails the build if any of that changes.
 
 ## What exists
 
