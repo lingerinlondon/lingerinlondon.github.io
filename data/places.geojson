@@ -16,7 +16,7 @@
         "name": "British Library",
         "seating": "fixed",
         "conversation": "possible",
-        "activity": "expected",
+        "activity": "possible",
         "setting": "indoor",
         "table": "some",
         "support_options": [

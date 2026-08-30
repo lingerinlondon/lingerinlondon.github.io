@@ -4,7 +4,7 @@
   "title": "Central London Third Places — place properties, v0",
   "description": "Single source of truth for fields. The validator, the contribution forms and the site's filters all derive from this file; nothing may hand-maintain a second list of fields elsewhere.",
 
-  "$comment": "PROVISIONAL, and written before the survey has happened. There is no `verified` field on purpose: every entry comes from someone who has sat in the place and says so, whether that is the curator or a contributor filling in the form, and a flag that is true of everything carries no information. What varies is WHEN, which is last_checked. Four fields are GATES: they describe what a place must be to belong here at all, so their enums are pinned to the passing values and a place that fails one is not a badly-described place, it is a place that belongs somewhere else. The gates are payment_to_enter, payment_to_sit, time_pressure and seating. They are kept as fields rather than dropped so that anyone who downloads this data knows what a row guarantees without reading the README, and so that loosening a gate later is a one-line enum change rather than a re-collection. Everything else is description, and only descriptive fields carry x-filter — filtering on a gate would return the entire corpus.",
+  "$comment": "A RULE FOR ADDING FIELDS, learned twice the hard way: describe the room, not who is in it today. If the honest answer changes with the hour, the day or the season, the field is describing an event rather than a place, and events are not places. Both `conversation` and `activity` began with a third value about the crowd — whether other people were talking, whether other people were working — and both were dropped for this reason. A space that is a quiet study room by day and sociable in the evening because events are held in it is a quiet study room with an events programme. PROVISIONAL, and written before the survey has happened. There is no `verified` field on purpose: every entry comes from someone who has sat in the place and says so, whether that is the curator or a contributor filling in the form, and a flag that is true of everything carries no information. What varies is WHEN, which is last_checked. Four fields are GATES: they describe what a place must be to belong here at all, so their enums are pinned to the passing values and a place that fails one is not a badly-described place, it is a place that belongs somewhere else. The gates are payment_to_enter, payment_to_sit, time_pressure and seating. They are kept as fields rather than dropped so that anyone who downloads this data knows what a row guarantees without reading the README, and so that loosening a gate later is a one-line enum change rather than a re-collection. Everything else is description, and only descriptive fields carry x-filter — filtering on a gate would return the entire corpus.",
 
   "$defs": {
     "common": {
@@ -81,14 +81,13 @@
 
         "conversation": {
           "type": ["string", "null"],
-          "enum": ["discouraged", "possible", "expected", null],
-          "description": "Whether talking is permitted. Not whether it happens.",
+          "enum": ["discouraged", "possible", null],
+          "description": "Whether talking is permitted. Not whether it happens. There was a third value, `expected`, for somewhere sitting in silence would be conspicuous. Nowhere turned out to qualify: every candidate was either an event held in a room rather than the room itself, or somewhere you can perfectly well sit alone with a cup of tea and be left be. It was kept for a while on the grounds of being a useful warning, which only works if the thing warned of exists.",
           "x-filter": {
             "label": "Conversation",
             "values": {
               "discouraged": { "label": "a quiet room", "help": "people keep their voices down, or do not speak at all. Come here to not be talked to." },
-              "possible": { "label": "talking is fine", "help": "you can hold a conversation without being out of place, whether or not anyone actually is" },
-              "expected": { "label": "sociable", "help": "the point of the place is people meeting each other, and sitting in silence alone would be the conspicuous thing. A community centre coffee morning rather than a reading room." }
+              "possible": { "label": "talking is fine", "help": "you can hold a conversation without being out of place, whether or not anyone actually is" }
             }
           }
         },

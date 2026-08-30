@@ -62,7 +62,7 @@ body:
     attributes:
       label: "When were you last there?"
       description: >-
-        Places change, so a suggestion needs a date. Within the last year, please — anything older is a memory rather than a report. Written as a date, like 2025-08-29.
+        Places change, so a suggestion needs a date. Within the last year, please — anything older is a memory rather than a report. Written as a date, like 2025-08-30.
     validations:
       required: true
   - type: textarea
@@ -80,7 +80,6 @@ body:
       options:
         - "discouraged — a quiet room — people keep their voices down, or do not speak at all. Come here to not be talked to."
         - "possible — talking is fine — you can hold a conversation without being out of place, whether or not anyone actually is"
-        - "expected — sociable — the point of the place is people meeting each other, and sitting in silence alone would be the conspicuous thing. A community centre coffee morning rather than a reading room."
   - type: dropdown
     id: activity
     attributes:

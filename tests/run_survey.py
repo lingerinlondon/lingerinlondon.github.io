@@ -32,7 +32,7 @@ EXPECTED = {
 # shorthand in, canonical value out
 SHORTHAND = [
     (("osm:node/3000009", "the far end away from the stalls"), "payment_to_sit", "optional"),
-    (("osm:node/3000009", "the far end away from the stalls"), "conversation", "expected"),
+    (("osm:node/3000009", "the far end away from the stalls"), "conversation", "possible"),
     (("osm:node/3000009", "the far end away from the stalls"), "setting", "covered"),
     (("osm:way/3000003", None), "seating", "fixed"),
     (("osm:way/3000003", None), "payment_to_enter", "optional"),
@@ -129,8 +129,12 @@ def main():
     else:
         print("ok   one OSM element carries two entries, told apart by their spot")
 
-    wrong = ["%s.%s = %r, expected %r" % (k[0], f, index[k].get(f), v)
-             for k, f, v in SHORTHAND if index.get(k, {}).get(f) != v]
+    absent = sorted({k for k, _, _ in SHORTHAND if k not in index})
+    if absent:
+        failures.append("rows that should have imported are missing: %s"
+                        % ", ".join("%s %s" % (i, s or "(whole place)") for i, s in absent))
+    wrong = ["%s.%s = %r, expected %r" % (k[0], f, index.get(k, {}).get(f), v)
+             for k, f, v in SHORTHAND if k in index and index[k].get(f) != v]
     if wrong:
         failures.append("shorthand was mapped wrongly: " + "; ".join(wrong))
     else:

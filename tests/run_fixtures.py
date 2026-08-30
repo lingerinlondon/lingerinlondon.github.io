@@ -15,7 +15,7 @@ FIX = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
 
 CASES = [
     ("bad_schema.geojson",
-     ["conversation", "not one of", "discouraged, possible, expected"]),
+     ["conversation", "not one of", "discouraged, possible"]),
     ("gate_payment_to_enter.geojson",
      ["payment_to_enter", "does not pass", "without paying", "not a mark against"]),
     ("gate_time_pressure.geojson",
