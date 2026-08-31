@@ -6,6 +6,33 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          -0.127437,
+          51.529879
+        ]
+      },
+      "properties": {
+        "id": "osm:way/4680891",
+        "spot": "Main foyer around the King's Library",
+        "name": "British Library",
+        "seating": "upright",
+        "conversation": "possible",
+        "setting": "indoor",
+        "table": "plenty",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "donation",
+          "ticketed_events"
+        ],
+        "why": "Lots of people might be working, but others are sitting with a drink from the cafe or browsing the exhibition displays.",
+        "last_checked": "2026-03-03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           -0.127603,
           51.529779
         ]
