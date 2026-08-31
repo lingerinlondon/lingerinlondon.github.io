@@ -6,6 +6,33 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          -0.127603,
+          51.529779
+        ]
+      },
+      "properties": {
+        "id": "osm:way/4680891",
+        "spot": "reading rooms",
+        "name": "British Library",
+        "seating": "upright",
+        "conversation": "discouraged",
+        "setting": "indoor",
+        "table": "plenty",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "donation",
+          "ticketed_events"
+        ],
+        "why": "Plenty of desks in quiet rooms, each with a lamp, plug sockets and comfortable enough chairs. Also request any book that takes your fancy.",
+        "last_checked": "2026-03-03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           -0.191679,
           51.501243
         ]
