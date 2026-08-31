@@ -149,7 +149,7 @@ def convert(body, today=None):
         if not answered(raw):
             continue
         if q["kind"] == "dropdown":
-            value = form_spec.value_from_option(raw, q["options"])
+            value = form_spec.value_from_option(raw, q["options"], q.get("values"))
             if value:
                 props[q["field"]] = value
             continue

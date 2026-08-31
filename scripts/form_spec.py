@@ -145,25 +145,33 @@ def questions(schema=None):
 
 
 def option_label(value, described):
-    """How an enum value is written in a form, and read back out of one.
+    """How an enum value is written in a form: its label, then its explanation.
 
-    `described` may be the {label, help} entry from the schema or a plain string.
+    The raw enum value used to lead — "low_only — low tables only — coffee-table
+    height…" — which read as three things and was the only one nobody needed.
     """
     if isinstance(described, dict):
-        parts = [described.get("label") or value]
-        if described.get("help"):
-            parts.append(described["help"])
-        described = " — ".join(parts) if len(parts) > 1 else parts[0]
+        label = described.get("label") or value
+        explanation = described.get("help")
+        return "%s — %s" % (label, explanation) if explanation else label
     return "%s — %s" % (value, described) if described else value
 
 
-def value_from_option(text, allowed):
-    """Read a value back from what a form displayed."""
+def value_from_option(text, allowed, values=None):
+    """Read a value back from what a form displayed.
+
+    Matches on the label, and still on the bare value, so an issue written
+    against an older version of the form is not silently misread as blank.
+    """
     text = (text or "").strip()
     if not text:
         return None
     head = text.split("—")[0].strip()
     for value in allowed:
         if head == value or text == value:
+            return value
+    for value, described in (values or {}).items():
+        label = described.get("label") if isinstance(described, dict) else described
+        if label and head == label:
             return value
     return None

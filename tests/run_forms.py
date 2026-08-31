@@ -118,12 +118,17 @@ def main():
     # Descriptive fields must be offered, but never as a requirement — a
     # contributor who does not know whether talking is allowed should still
     # be able to suggest the place.
+    # Checked by what a contributor actually reads, not by the raw enum value —
+    # the forms show labels now, and a test matching on the value would pass
+    # while the label said something else entirely.
     for name in form_spec.DESCRIPTIVE:
+        values = (schema_mod.fields()[name].get("x-filter") or {}).get("values") or {}
         for value in schema_mod.enum_values(name) or []:
-            if value not in issue:
-                failures.append("the issue form omits %s=%s" % (name, value))
-            if value not in page:
-                failures.append("the email form omits %s=%s" % (name, value))
+            shown = form_spec.option_label(value, values.get(value))
+            if shown not in issue:
+                failures.append("the issue form omits %s=%s (%r)" % (name, value, shown))
+            if shown not in page:
+                failures.append("the email form omits %s=%s (%r)" % (name, value, shown))
     # Descriptive fields are required now that "not sure" is gone. An HTML
     # select with no empty option silently reports its first value, so an
     # optional dropdown would record answers nobody actually gave.

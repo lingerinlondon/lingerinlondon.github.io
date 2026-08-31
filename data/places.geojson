@@ -17,7 +17,7 @@
         "seating": "fixed",
         "conversation": "possible",
         "setting": "indoor",
-        "table": "some",
+        "table": "a_few",
         "support_options": [
           "cafe_or_bar",
           "shop",
@@ -43,7 +43,7 @@
         "seating": "soft",
         "conversation": "possible",
         "setting": "indoor",
-        "table": "some",
+        "table": "a_few",
         "support_options": [
           "cafe_or_bar",
           "shop",

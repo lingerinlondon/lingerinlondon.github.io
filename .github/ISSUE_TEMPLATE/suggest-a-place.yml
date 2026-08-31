@@ -78,32 +78,33 @@ body:
     attributes:
       label: "Conversation"
       options:
-        - "discouraged — a quiet room — people keep their voices down, or do not speak at all. Come here to not be talked to."
-        - "possible — talking is fine — you can hold a conversation without being out of place, whether or not anyone actually is"
+        - "a quiet room — people keep their voices down, or do not speak at all. Come here to not be talked to."
+        - "talking is fine — you can hold a conversation without being out of place, whether or not anyone actually is"
   - type: dropdown
     id: seating
     attributes:
       label: "Seating"
       options:
-        - "fixed — benches — benches or seating bolted in place"
-        - "movable — movable chairs — chairs you can pick up and move, which is what lets a group form"
-        - "soft — soft seating — sofas or armchairs"
+        - "benches — benches or seating bolted in place"
+        - "movable chairs — chairs you can pick up and move, which is what lets a group form"
+        - "soft seating — sofas or armchairs"
   - type: dropdown
     id: table
     attributes:
       label: "Tables"
       options:
-        - "none — no tables — nothing to put anything on but your lap"
-        - "some — some tables — a few, and you may have to wait or share"
-        - "most — tables throughout — most seats have a surface with them"
+        - "no tables — nothing to put anything on but your lap"
+        - "low tables only — coffee-table height: fine for a cup or a book, awkward for a laptop"
+        - "a few you can work at — tables at a height you can work at, but not many of them"
+        - "plenty you can work at — most seats come with a table you can work at"
   - type: dropdown
     id: setting
     attributes:
       label: "Setting"
       options:
-        - "indoor — indoor — inside a building"
-        - "outdoor — outdoor — open air, so weather decides whether it works"
-        - "covered — covered — outdoors but under cover — an arcade, a colonnade, a canopy"
+        - "indoor — inside a building"
+        - "outdoor — open air, so weather decides whether it works"
+        - "covered — outdoors but under cover — an arcade, a colonnade, a canopy"
   - type: checkboxes
     id: support_options
     attributes:

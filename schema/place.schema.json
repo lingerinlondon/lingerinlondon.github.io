@@ -63,7 +63,7 @@
         "seating": {
           "type": ["string", "null"],
           "enum": ["fixed", "movable", "soft", null],
-          "description": "GATE and description at once. There must be somewhere to sit, so 'none' is not a value here; which kind it is remains useful. This field describes the seat, not what is in front of it — whether there is a table to put a laptop or a book on is the separate `table` field, because the two vary independently.",
+          "description": "GATE and description at once. There must be somewhere to sit, so 'none' is not a value here; which kind it is remains useful. NOT A CENSUS: a large building has all three kinds, and answering 'all of the above' tells a reader nothing. Name the seating you would point someone at — this is a curated list and the `why` sentence is already a recommendation rather than a description, so this should be too. That also settles what to do when seats and tables pair up differently in different corners: you are not claiming every chair meets every table, you are naming the corner worth going to. This field describes the seat and not what is in front of it; whether there is a usable surface is the separate `table` field.",
           "x-gate": {
             "confirm": "There is somewhere to sit down.",
             "excluded": "nowhere to sit",
@@ -107,14 +107,15 @@
 
         "table": {
           "type": ["string", "null"],
-          "enum": ["none", "some", "most", null],
-          "description": "Whether there is a surface to put a laptop, a book or a cup on. Separate from `seating` because the two vary independently — an armchair with a side table and a hard chair at a desk are different propositions, and neither is described by the seat alone. This is the field that answers 'can I actually work here', which the rest of the schema only implies.",
+          "enum": ["none", "low_only", "a_few", "plenty", null],
+          "description": "Whether there is a surface you could actually use, and how much of one. Height matters more than count, which an earlier none/some/most version could not say: a low coffee table is not a smaller quantity of table, it is a different kind, fine for a cup or a book and ergonomically wrong for a laptop. The values run as a ladder from nothing to plenty, and everything from `a_few` upwards means tables at a height you can work at. Separate from `seating` because the two vary independently — an armchair with a side table and an upright chair at a desk are different propositions and neither is described by the seat alone.",
           "x-filter": {
             "label": "Tables",
             "values": {
               "none": { "label": "no tables", "help": "nothing to put anything on but your lap" },
-              "some": { "label": "some tables", "help": "a few, and you may have to wait or share" },
-              "most": { "label": "tables throughout", "help": "most seats have a surface with them" }
+              "low_only": { "label": "low tables only", "help": "coffee-table height: fine for a cup or a book, awkward for a laptop" },
+              "a_few": { "label": "a few you can work at", "help": "tables at a height you can work at, but not many of them" },
+              "plenty": { "label": "plenty you can work at", "help": "most seats come with a table you can work at" }
             }
           }
         },
