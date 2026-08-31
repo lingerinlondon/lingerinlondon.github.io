@@ -221,8 +221,8 @@ def build_html_form():
                          % (key, key, form_spec.oldest_acceptable().isoformat(),
                             __import__("datetime").date.today().isoformat(), required))
         elif q["kind"] == "textarea":
-            parts.append('<textarea id="%s" name="%s" maxlength="200"%s></textarea>'
-                         % (key, key, required))
+            parts.append('<textarea id="%s" name="%s" maxlength="%d"%s></textarea>'
+                         % (key, key, schema_mod.why_limit(), required))
         elif q["kind"] == "dropdown":
             parts.append('<select id="%s" name="%s"%s>' % (key, key, required))
             # No "not sure": it produced entries with a hole in them, and someone

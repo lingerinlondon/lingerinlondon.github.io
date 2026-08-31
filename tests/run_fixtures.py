@@ -9,7 +9,7 @@ just been told their suggestion does not fit.
 import os
 import sys
 
-from scripts import validate
+from scripts import schema as schema_mod, validate
 
 FIX = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
 
@@ -33,7 +33,7 @@ CASES = [
     ("why_missing.geojson",
      ["why", "missing"]),
     ("why_too_long.geojson",
-     ["why", "215 characters", "limit is 200"]),
+     ["why", "characters", "The limit is %d" % schema_mod.why_limit()]),
 ]
 
 

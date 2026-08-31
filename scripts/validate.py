@@ -42,7 +42,7 @@ FIELD_HINTS = {
         "'top floor, by the window'. Leave it out for the place as a whole."
     ),
     "last_checked": "The date someone was last there. Expected something like 2026-08-27.",
-    "why": "One sentence on why this place is here, up to 200 characters.",
+    "why": "Why this place is here, up to %d characters." % schema_mod.why_limit(),
 }
 
 

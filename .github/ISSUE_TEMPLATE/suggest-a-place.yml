@@ -70,7 +70,7 @@ body:
     attributes:
       label: "Why is it here?"
       description: >-
-        One sentence, up to 200 characters. Why does this place feel like a comfortable place to just ‘be’ in London?
+        Up to 350 characters. Why does this place feel like a comfortable place to just ‘be’ in London?
     validations:
       required: true
   - type: dropdown

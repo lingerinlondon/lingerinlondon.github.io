@@ -61,6 +61,11 @@ def enum_values(field_name, schema=None):
     return None
 
 
+def why_limit(schema=None):
+    """How long the one free-text field may be. Asked for, never retyped."""
+    return fields(schema)["why"].get("maxLength")
+
+
 def gates(schema=None):
     """The eligibility criteria, in the order the form should ask them."""
     out = []

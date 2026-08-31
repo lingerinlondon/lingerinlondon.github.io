@@ -134,8 +134,8 @@
         "why": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 200,
-          "description": "One sentence on why this place is here. The only free text in the schema, capped so it stays a sentence rather than a review."
+          "maxLength": 350,
+          "description": "Why this place is here. The only free text in the schema, capped so it stays a recommendation rather than a review."
         },
 
         "last_checked": {

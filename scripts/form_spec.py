@@ -97,8 +97,8 @@ def questions(schema=None):
             "key": "why",
             "kind": "textarea",
             "label": "Why is it here?",
-            "note": ("One sentence, up to 200 characters. Why does this place feel like a "
-                     "comfortable place to just ‘be’ in London?"),
+            "note": ("Up to %d characters. Why does this place feel like a comfortable "
+                     "place to just ‘be’ in London?" % schema_mod.why_limit(schema)),
             "required": True,
             "field": "why",
         },
