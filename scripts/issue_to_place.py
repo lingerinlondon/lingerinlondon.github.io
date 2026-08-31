@@ -202,6 +202,54 @@ def convert(body, today=None):
              "properties": ordered}, notes)
 
 
+def overlap_notes(feature, existing):
+    """What to tell the reviewer when this place is already on the list.
+
+    Two people can describe the same place honestly and differently — one is
+    picturing the sofas, the other the desks — and neither is wrong. Which is
+    why this never decides: it says what is about to change and leaves it to a
+    person, who can merge the two views, split them with a `spot`, or keep what
+    is already there.
+    """
+    props = feature["properties"]
+    ident, spot = props.get("id"), props.get("spot") or None
+    notes = []
+
+    same_place = [f for f in existing if (f["properties"].get("id")) == ident]
+    if not same_place:
+        return notes
+
+    exact = [f for f in same_place if (f["properties"].get("spot") or None) == spot]
+    others = [f for f in same_place if f not in exact]
+
+    if exact:
+        was = exact[0]["properties"]
+        changed = []
+        for field in schema_mod.fields():
+            before, after = was.get(field), props.get(field)
+            if before != after:
+                changed.append("  - %s: %r becomes %r" % (field, before, after))
+        notes.append(
+            "**%s is already on the list%s.** Merging this replaces the existing entry, "
+            "so read the change below before you do. Neither answer is wrong — someone "
+            "picturing the sofas and someone picturing the desks will describe the same "
+            "room differently. You can keep both by giving them different spots."
+            % (props.get("name"), " (%s)" % spot if spot else "")
+        )
+        if changed:
+            notes.append("What changes:\n" + "\n".join(changed))
+
+    if others:
+        notes.append(
+            "The list already has %d other entr%s for this OSM element: %s. This one is "
+            "being added alongside them, not replacing them."
+            % (len(others), "y" if len(others) == 1 else "ies",
+               ", ".join(repr(f["properties"].get("spot") or "the place as a whole")
+                         for f in others))
+        )
+    return notes
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--body", required=True, help="File holding the issue body.")
@@ -224,6 +272,7 @@ def main(argv=None):
     with open(args.out) as fh:
         doc = json.load(fh)
     features = doc.get("features", [])
+    notes = overlap_notes(feature, features) + notes
     key = (feature["properties"]["id"], feature["properties"].get("spot") or None)
     features = [f for f in features
                 if ((f["properties"].get("id"), f["properties"].get("spot") or None) != key

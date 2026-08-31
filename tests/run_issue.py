@@ -143,6 +143,47 @@ def main():
         else:
             print("ok   a question renamed out from under the parser fails loudly")
 
+    # Two people can describe the same place honestly and differently. Neither
+    # may be discarded without the reviewer being told.
+    listed = {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-0.1228, 51.5095]},
+              "properties": {"id": "osm:way/68807965", "name": "Royal Society of Arts",
+                             "seating": "movable", "conversation": "possible",
+                             "table": "plenty", "why": "The desks are the good bit.",
+                             "last_checked": "2026-08-06"}}
+
+    feature, _ = issue_to_place.convert(build_body(
+        {"osm_id": "https://www.openstreetmap.org/way/68807965",
+         "name": "Royal Society of Arts", "spot": "_No response_"}), TODAY)
+    notes = issue_to_place.overlap_notes(feature, [listed])
+    text = " ".join(notes)
+    if not notes:
+        failures.append("a suggestion replacing an existing entry produced no warning at all")
+    elif "already on the list" not in text or "replaces the existing entry" not in text:
+        failures.append("the overwrite warning does not say an entry is being replaced: %s" % text)
+    elif "seating" not in text or "why" not in text:
+        failures.append("the warning does not say which fields change: %s" % text)
+    else:
+        print("ok   replacing an existing entry warns, and says exactly what changes")
+
+    feature, _ = issue_to_place.convert(build_body(
+        {"osm_id": "https://www.openstreetmap.org/way/68807965",
+         "name": "Royal Society of Arts", "spot": "the armchairs downstairs"}), TODAY)
+    notes = issue_to_place.overlap_notes(feature, [listed])
+    text = " ".join(notes)
+    if "replaces" in text:
+        failures.append("a named corner was reported as replacing the whole place: %s" % text)
+    elif "alongside" not in text:
+        failures.append("a second entry for one OSM element was not flagged at all: %s" % text)
+    else:
+        print("ok   a named corner is added alongside, not treated as a clash")
+
+    # A place nobody has listed says nothing.
+    feature, _ = issue_to_place.convert(build_body(), TODAY)
+    if issue_to_place.overlap_notes(feature, [listed]):
+        failures.append("an unrelated place was reported as overlapping")
+    else:
+        print("ok   a place nobody has listed produces no overlap warning")
+
     # An ordinary issue must be ignored, not misread as a place.
     for label, body in [
         ("an empty issue", ""),
