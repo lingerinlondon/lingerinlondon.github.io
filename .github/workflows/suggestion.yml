@@ -38,6 +38,10 @@ jobs:
           BODY: ${{ github.event.issue.body }}
         run: printf '%s' "$BODY" > /tmp/issue.md
 
+      # Exit codes: 0 became a place, 2 could not (tell the contributor why),
+      # 3 was not a suggestion at all. Anything else is a bug in this repo and
+      # must fail the run — the first version treated it as nothing to do, so a
+      # crash looked exactly like success and the issue simply vanished.
       - name: Read it into a place
         id: convert
         run: |
@@ -46,10 +50,21 @@ jobs:
             --body /tmp/issue.md \
             --out data/places.geojson \
             --notes /tmp/notes.md 2>/tmp/error.txt
-          echo "status=$?" >> "$GITHUB_OUTPUT"
+          status=$?
           set -e
-
-      # Exit 3 means the issue was not a suggestion. Nothing to say about it.
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          case "$status" in
+            0) echo "Read into a place." >> "$GITHUB_STEP_SUMMARY" ;;
+            2) { echo "### Turned away, and the issue has been told why"; echo;
+                 sed 's/^/> /' /tmp/error.txt; } >> "$GITHUB_STEP_SUMMARY" ;;
+            3) { echo "### Not a suggestion, so nothing was done";
+                 echo; echo "This issue does not carry the suggestion form's questions."; } \
+                 >> "$GITHUB_STEP_SUMMARY" ;;
+            *) { echo "### This failed unexpectedly, which is a bug in this repository";
+                 echo; echo '```'; cat /tmp/error.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+               cat /tmp/error.txt >&2
+               exit "$status" ;;
+          esac
 
       # A rejection is a reply to a person, not a failed build. Say why, plainly.
       - name: Explain why it cannot be accepted
