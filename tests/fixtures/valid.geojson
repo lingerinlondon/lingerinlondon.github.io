@@ -17,7 +17,7 @@
         "payment_to_enter": "none",
         "payment_to_sit": "none",
         "time_pressure": "none",
-        "seating": "fixed",
+        "seating": "bench",
         "conversation": "discouraged",
         "setting": "indoor",
         "support_options": [
@@ -45,7 +45,7 @@
         "payment_to_enter": "none",
         "payment_to_sit": "optional",
         "time_pressure": "none",
-        "seating": "movable",
+        "seating": "upright",
         "conversation": "possible",
         "setting": "indoor",
         "support_options": [
@@ -74,7 +74,7 @@
         "payment_to_enter": "none",
         "payment_to_sit": "none",
         "time_pressure": "none",
-        "seating": "fixed",
+        "seating": "bench",
         "conversation": "possible",
         "setting": "outdoor",
         "last_checked": "2026-08-20",
