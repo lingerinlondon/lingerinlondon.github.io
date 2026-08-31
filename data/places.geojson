@@ -1,4 +1,29 @@
 {
   "type": "FeatureCollection",
-  "features": []
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.122714,
+          51.509412
+        ]
+      },
+      "properties": {
+        "id": "osm:way/68807965",
+        "name": "Royal Society of Arts",
+        "seating": "soft",
+        "conversation": "possible",
+        "setting": "indoor",
+        "table": "plenty",
+        "support_options": [
+          "cafe_or_bar",
+          "membership"
+        ],
+        "why": "You can sit in various spots across the three floors and chat, read or work from your laptop.",
+        "last_checked": "2026-08-04"
+      }
+    }
+  ]
 }
