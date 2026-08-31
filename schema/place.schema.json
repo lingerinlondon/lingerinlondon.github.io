@@ -114,8 +114,8 @@
             "values": {
               "none": { "label": "no tables", "help": "nothing to put anything on but your lap" },
               "low_only": { "label": "low tables only", "help": "coffee-table height: fine for a cup or a book, awkward for a laptop" },
-              "a_few": { "label": "a few you can work at", "help": "tables at a height you can work at, but not many of them" },
-              "plenty": { "label": "plenty you can work at", "help": "most seats come with a table you can work at" }
+              "a_few": { "label": "a few tables you can work at", "help": "tables at a height you can work at, but not many of them" },
+              "plenty": { "label": "plenty of tables you can work at", "help": "most seats come with a table you can work at" }
             }
           }
         },

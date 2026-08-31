@@ -95,8 +95,8 @@ body:
       options:
         - "no tables — nothing to put anything on but your lap"
         - "low tables only — coffee-table height: fine for a cup or a book, awkward for a laptop"
-        - "a few you can work at — tables at a height you can work at, but not many of them"
-        - "plenty you can work at — most seats come with a table you can work at"
+        - "a few tables you can work at — tables at a height you can work at, but not many of them"
+        - "plenty of tables you can work at — most seats come with a table you can work at"
   - type: dropdown
     id: setting
     attributes:
