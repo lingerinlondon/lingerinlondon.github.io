@@ -20,3 +20,6 @@ docs/
 site/index.html
 site/data/
 site/schema/
+
+# Leftover working files.
+*.csv
