@@ -114,6 +114,8 @@ jobs:
             echo "Validation runs on this pull request. If it is red, the entry is incomplete rather than wrong — fill in what it names and it will go green."
             echo
             echo "**This branch is rebuilt from the issue every time the issue is edited**, so anything committed here is overwritten when that happens. The tidiest way to correct a suggestion is to edit #$NUMBER and let it regenerate. Edit the branch directly only once the issue has settled."
+            echo
+            echo "**If this says it has conflicts, do not resolve them by hand.** Two suggestions in flight at once both add to \`data/places.geojson\`, so merging one leaves the other behind. Edit #$NUMBER instead — the branch is rebuilt on top of whatever \`main\` holds now, and the conflict goes with it."
           } > /tmp/pr.md
 
           gh pr create --base main --head "$BRANCH" \
