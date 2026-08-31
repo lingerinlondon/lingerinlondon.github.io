@@ -20,7 +20,3 @@ docs/
 site/index.html
 site/data/
 site/schema/
-
-# Your own working files: survey sheets in progress.
-visits.csv
-*.visits.csv

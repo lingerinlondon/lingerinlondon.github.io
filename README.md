@@ -33,7 +33,7 @@ The corpus is expected to stay small. Very few places actually clear all four.
 | `data/boundary.geojson` | The project boundary. Authoritative. |
 | `data/places.geojson` | The corpus. |
 | `schema/place.schema.json` | The single source of truth. Validation, both forms and the site's filters all derive from it. |
-| `scripts/` | Validation, form generation, survey import. Python 3, one dependency. |
+| `scripts/` | Validation, form generation, building the list. Python 3, two dependencies. |
 | `site/suggest.html` | The contribution form for people without a GitHub account. Generated — do not edit. |
 | `.github/ISSUE_TEMPLATE/` | The contribution form for people with one. Generated — do not edit. |
 
@@ -71,22 +71,16 @@ checks:
 python3 -m scripts.build_forms
 ```
 
-Turn a survey sheet into features. Rows it cannot map are reported rather than dropped:
+Rebuild the list after adding a place, and open it to check before pushing:
 
 ```bash
-python3 -m scripts.survey_import visits.csv --out data/places.geojson
-```
-
-Print a blank capture sheet to fill in on a phone or on paper:
-
-```bash
-python3 -m scripts.survey_import --template
+python3 -m scripts.build_site && open site/index.html
 ```
 
 Run every check:
 
 ```bash
-python3 -m tests.run_fixtures && python3 -m tests.run_forms && python3 -m tests.run_survey
+python3 -m tests.run_fixtures && python3 -m tests.run_forms && python3 -m tests.run_site && python3 -m tests.run_issue
 ```
 
 ## Identity, and why an entry can share an OSM id

@@ -1,0 +1,2 @@
+id,name,spot,lat,lon,date,payment_to_enter,payment_to_sit,time_pressure,seating,conversation,activity,setting,table,support_options,why,suggested_by
+osm:way/123456,The place,"top floor, by the window",51.5194,-0.1270,2026-08-27,free,free,no,chairs,quiet,yes,in,some,"cafe,donation",One sentence on why this is here.,
