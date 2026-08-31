@@ -62,8 +62,8 @@
         },
         "seating": {
           "type": ["string", "null"],
-          "enum": ["fixed", "movable", "soft", null],
-          "description": "GATE and description at once. There must be somewhere to sit, so 'none' is not a value here; which kind it is remains useful. NOT A CENSUS: a large building has all three kinds, and answering 'all of the above' tells a reader nothing. Name the seating you would point someone at — this is a curated list and the `why` sentence is already a recommendation rather than a description, so this should be too. That also settles what to do when seats and tables pair up differently in different corners: you are not claiming every chair meets every table, you are naming the corner worth going to. This field describes the seat and not what is in front of it; whether there is a usable surface is the separate `table` field.",
+          "enum": ["bench", "upright", "soft", null],
+          "description": "GATE and description at once. There must be somewhere to sit, so 'none' is not a value here; which kind it is remains useful. The three values are one ladder, about how it feels to sit there for a couple of hours. They were once fixed/movable/soft, which mixed two axes — mobility and comfort — and left an ordinary upright chair at a desk with nowhere to go, despite being the commonest seating in any working space. Mobility was dropped rather than added to: it was justified as letting a group form, and nobody has ever chosen where to sit because the chairs move. NOT A CENSUS: a large building has all three kinds, and answering 'all of the above' tells a reader nothing. Name the seating you would point someone at — this is a curated list and the `why` sentence is already a recommendation rather than a description, so this should be too. That also settles what to do when seats and tables pair up differently in different corners: you are not claiming every chair meets every table, you are naming the corner worth going to. This field describes the seat and not what is in front of it; whether there is a usable surface is the separate `table` field.",
           "x-gate": {
             "confirm": "There is somewhere to sit down.",
             "excluded": "nowhere to sit",
@@ -72,9 +72,9 @@
           "x-filter": {
             "label": "Seating",
             "values": {
-              "fixed": { "label": "benches", "help": "benches or seating bolted in place" },
-              "movable": { "label": "movable chairs", "help": "chairs you can pick up and move, which is what lets a group form" },
-              "soft": { "label": "soft seating", "help": "sofas or armchairs" }
+              "bench": { "label": "benches", "help": "hard seating, often backless or bolted in place" },
+              "upright": { "label": "upright chairs", "help": "ordinary chairs at desks or tables — comfortable enough for a couple of hours" },
+              "soft": { "label": "soft seating", "help": "sofas and armchairs" }
             }
           }
         },

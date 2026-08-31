@@ -85,9 +85,9 @@ body:
     attributes:
       label: "Seating"
       options:
-        - "benches — benches or seating bolted in place"
-        - "movable chairs — chairs you can pick up and move, which is what lets a group form"
-        - "soft seating — sofas or armchairs"
+        - "benches — hard seating, often backless or bolted in place"
+        - "upright chairs — ordinary chairs at desks or tables — comfortable enough for a couple of hours"
+        - "soft seating — sofas and armchairs"
   - type: dropdown
     id: table
     attributes:
