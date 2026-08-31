@@ -6,6 +6,31 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          -0.191679,
+          51.501243
+        ]
+      },
+      "properties": {
+        "id": "osm:node/6476410685",
+        "name": "Japan House",
+        "seating": "soft",
+        "conversation": "possible",
+        "setting": "indoor",
+        "table": "a_few",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "ticketed_events"
+        ],
+        "why": "Sit upstairs on the softer seats surrounded by Japanese design or sit at the table in the downstairs library.",
+        "last_checked": "2026-08-23"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           -0.122714,
           51.509412
         ]
