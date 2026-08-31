@@ -51,10 +51,6 @@ SYNONYMS = {
                      "yes": "possible", "y": "possible", "ok": "possible", "fine": "possible",
                      "loud": "possible", "social": "possible", "chatty": "possible",
                      "talking": "possible"},
-    "activity": {"no": "discouraged", "n": "discouraged", "sitting": "discouraged",
-                 "yes": "possible", "y": "possible", "ok": "possible", "fine": "possible",
-                 "laptops": "possible", "working": "possible", "study": "possible",
-                 "reading": "possible", "drawing": "possible"},
     "seating": {"bench": "fixed", "benches": "fixed", "bolted": "fixed", "pews": "fixed",
                 "chairs": "movable", "loose": "movable", "moveable": "movable",
                 "sofa": "soft", "sofas": "soft", "armchairs": "soft",
@@ -84,6 +80,7 @@ COLUMN_ALIASES = {
     "payment_sit": "payment_to_sit", "sit": "payment_to_sit",
     "pressure": "time_pressure", "time": "time_pressure",
     "talk": "conversation", "talking": "conversation",
+
 }
 
 GEOMETRY_COLUMNS = ("lat", "lon")

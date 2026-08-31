@@ -20,7 +20,7 @@ from scripts import schema as schema_mod
 # age. It only governs what is accepted at the door.
 MAX_AGE_DAYS = 365
 
-DESCRIPTIVE = ("conversation", "activity", "seating", "table", "setting")
+DESCRIPTIVE = ("conversation", "seating", "table", "setting")
 
 
 def oldest_acceptable(today=None):

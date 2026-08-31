@@ -5,6 +5,7 @@ nothing is ever dropped without saying so, and a row that fails a gate is told
 its place does not qualify rather than that its spelling is wrong.
 """
 
+import csv
 import json
 import os
 import sys
@@ -164,12 +165,24 @@ def main():
     corpus = os.path.join(tmp, "corpus.geojson")
     trip_one = os.path.join(tmp, "one.csv")
     trip_two = os.path.join(tmp, "two.csv")
-    header = ("id,name,spot,lat,lon,date,payment_to_enter,payment_to_sit,time_pressure,"
-              "conversation,activity,seating,setting,support_options,why\n")
-    open(trip_one, "w").write(header + "osm:way/9000001,A library,,51.5194,-0.1270,"
-                              "2026-08-28,free,free,no,quiet,study,chairs,in,,First one.\n")
-    open(trip_two, "w").write(header + "osm:node/9000002,A garden,,51.5163,-0.1220,"
-                              "2026-08-29,free,free,no,ok,yes,bench,out,,Second one.\n")
+    # Built from the schema, not typed out: a hand-written header goes stale the
+    # moment a field is added or retired, and the symptom is a row that quietly
+    # fails to import rather than a test that says why.
+    columns = survey_import.template_columns()
+    answers = {"lat": "51.5194", "lon": "-0.1270", "date": "2026-08-28",
+               "payment_to_enter": "free", "payment_to_sit": "free", "time_pressure": "no",
+               "seating": "chairs", "conversation": "quiet", "setting": "in",
+               "table": "some", "why": "A sentence about this one."}
+
+    def sheet(path, ident, name):
+        row = dict(answers, id=ident, name=name)
+        with open(path, "w", newline="") as fh:
+            writer = csv.writer(fh)
+            writer.writerow(columns)
+            writer.writerow([row.get(c, "") for c in columns])
+
+    sheet(trip_one, "osm:way/9000001", "A library")
+    sheet(trip_two, "osm:node/9000002", "A garden")
 
     quietly = {"stdout": sys.stdout, "stderr": sys.stderr}
     sys.stdout = open(os.devnull, "w")

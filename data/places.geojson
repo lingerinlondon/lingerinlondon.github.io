@@ -16,7 +16,6 @@
         "name": "British Library",
         "seating": "fixed",
         "conversation": "possible",
-        "activity": "possible",
         "setting": "indoor",
         "table": "some",
         "support_options": [
@@ -43,7 +42,6 @@
         "name": "Japan House",
         "seating": "soft",
         "conversation": "possible",
-        "activity": "possible",
         "setting": "indoor",
         "table": "some",
         "support_options": [
@@ -69,7 +67,6 @@
         "name": "Royal Society of Arts",
         "seating": "soft",
         "conversation": "possible",
-        "activity": "possible",
         "setting": "indoor",
         "support_options": [
           "cafe_or_bar",

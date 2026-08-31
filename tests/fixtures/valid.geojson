@@ -19,7 +19,6 @@
         "time_pressure": "none",
         "seating": "fixed",
         "conversation": "discouraged",
-        "activity": "possible",
         "setting": "indoor",
         "support_options": [
           "donation",
@@ -48,7 +47,6 @@
         "time_pressure": "none",
         "seating": "movable",
         "conversation": "possible",
-        "activity": "possible",
         "setting": "indoor",
         "support_options": [
           "cafe_or_bar",
@@ -78,7 +76,6 @@
         "time_pressure": "none",
         "seating": "fixed",
         "conversation": "possible",
-        "activity": "possible",
         "setting": "outdoor",
         "last_checked": "2026-08-20",
         "table": "none"

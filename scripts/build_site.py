@@ -338,7 +338,7 @@ def render(places, gates, chips):
     return "\n".join(parts)
 
 
-DESCRIPTIVE_ORDER = ("conversation", "activity", "seating", "table", "setting")
+DESCRIPTIVE_ORDER = ("conversation", "seating", "table", "setting")
 
 
 def render_place(place, fields):
