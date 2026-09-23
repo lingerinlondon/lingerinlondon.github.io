@@ -103,6 +103,34 @@
         "why": "You can sit in various spots across the three floors and chat, read or work from your laptop.",
         "last_checked": "2026-08-04"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.11681,
+          51.505764
+        ]
+      },
+      "properties": {
+        "id": "osm:relation/1698905",
+        "spot": "Ground level (level 2)",
+        "name": "Southbank Centre",
+        "seating": "upright",
+        "conversation": "possible",
+        "setting": "indoor",
+        "table": "plenty",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "donation",
+          "membership",
+          "ticketed_events"
+        ],
+        "why": "Chill Brutalist space with lots of laptop work, people catching up - great on a bright day, though not the most airy place.",
+        "last_checked": "2026-09-23"
+      }
     }
   ]
 }
