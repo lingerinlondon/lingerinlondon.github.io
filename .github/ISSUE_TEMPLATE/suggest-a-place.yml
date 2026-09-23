@@ -62,7 +62,7 @@ body:
     attributes:
       label: "When were you last there?"
       description: >-
-        Places change, so a suggestion needs a date. Within the last year, please — anything older is a memory rather than a report. Written as a date, like 2025-08-31.
+        Places change, so a suggestion needs a date. Within the last year, please — anything older is a memory rather than a report. Written as a date, like 2026-01-15.
     validations:
       required: true
   - type: textarea

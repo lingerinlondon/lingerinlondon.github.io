@@ -12,6 +12,7 @@ which is invalid and invisible.
 """
 
 import os
+import re
 import sys
 
 from scripts import build_forms, form_spec, schema as schema_mod
@@ -145,10 +146,32 @@ def main():
     date_question = next(q for q in form_spec.questions() if q["key"] == "last_checked")
     if date_question["label"] not in issue or date_question["label"] not in page:
         failures.append("neither form asks when the contributor was last there")
-    elif 'type="date"' not in page or 'min="%s"' % form_spec.oldest_acceptable().isoformat() not in page:
-        failures.append("the email form does not stop a visit older than a year")
+    elif 'type="date"' not in page:
+        failures.append("the email form has no date field")
+    elif re.search(r'<input type="date"[^>]*\bmin="\d{4}-\d{2}-\d{2}"', page):
+        # A static min/max encodes "today" as of whenever build_forms.py was
+        # last run, and a static site is not rebuilt every morning — the live
+        # site sat with a stale max for three weeks before this was caught,
+        # silently refusing any recent visit date. Bounds belong in a script
+        # that reads the visitor's own clock, checked for below instead.
+        failures.append(
+            "the date field has a static min/max baked in — this goes stale the "
+            "day after it is built, since a static file is not regenerated daily"
+        )
+    elif "el.min = toISO(yearAgo)" not in page or "el.max = toISO(today)" not in page:
+        failures.append("no script sets the date bounds from the visitor's own clock")
     else:
-        print("ok   both forms ask when, and the browser refuses a visit over a year old")
+        print("ok   the date field's bounds are computed live, in the visitor's browser")
+
+    # The issue form has no scripting available at all, so its hint must not
+    # promise a bound it cannot keep current — a fixed format example only.
+    if form_spec.oldest_acceptable().isoformat() in issue:
+        failures.append(
+            "the issue form's hint embeds today's computed date, which goes "
+            "stale the day after the file is committed"
+        )
+    else:
+        print("ok   the issue form's date hint does not bake in a value that drifts by the day")
 
     # Someone with a GitHub account should be sent to the better route, not
     # left transcribing into an email because the page never mentioned it.

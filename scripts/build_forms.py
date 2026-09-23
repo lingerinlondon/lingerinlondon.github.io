@@ -92,7 +92,12 @@ def build_issue_form():
 
         note = q.get("note")
         if q["kind"] == "date":
-            note = "%s Written as a date, like %s." % (note, form_spec.oldest_acceptable().isoformat())
+            # A fixed example, not "today minus a year" — that value changes
+            # every day, and baking it into committed YAML made the file
+            # disagree with a fresh build each morning regardless of whether
+            # the schema had changed. The real one-year rule is enforced live,
+            # server-side, when the Action reads the issue.
+            note = "%s Written as a date, like 2026-01-15." % note
         if note:
             lines += ["      description: >-", "        %s" % note]
 
@@ -216,10 +221,12 @@ def build_html_form():
         if q["kind"] == "input":
             parts.append('<input type="text" id="%s" name="%s"%s>' % (key, key, required))
         elif q["kind"] == "date":
-            # The browser refuses a visit older than a year, or one in the future.
-            parts.append('<input type="date" id="%s" name="%s" min="%s" max="%s"%s>'
-                         % (key, key, form_spec.oldest_acceptable().isoformat(),
-                            __import__("datetime").date.today().isoformat(), required))
+            # No static min/max: those would freeze "today" at whatever day
+            # build_forms.py was last run, and a static site does not get
+            # rerun each morning. Bounds are set in the browser instead — see
+            # the script block below — so they are correct on every visit.
+            parts.append('<input type="date" id="%s" name="%s" class="js-date-bounds"%s>'
+                         % (key, key, required))
         elif q["kind"] == "textarea":
             parts.append('<textarea id="%s" name="%s" maxlength="%d"%s></textarea>'
                          % (key, key, schema_mod.why_limit(), required))
@@ -245,6 +252,19 @@ def build_html_form():
         '<textarea id="letter" readonly></textarea>',
         "</div>",
         "<script>",
+        "  // Bounds computed from the visitor's own clock, not the generator's. A",
+        "  // static file cannot know 'today' at every future viewing, so the range",
+        "  // is set here instead of baked into the HTML at build time.",
+        "  (function () {",
+        "    var today = new Date();",
+        "    var toISO = function (d) { return d.toISOString().slice(0, 10); };",
+        "    var yearAgo = new Date(today);",
+        "    yearAgo.setFullYear(yearAgo.getFullYear() - 1);",
+        "    document.querySelectorAll('.js-date-bounds').forEach(function (el) {",
+        "      el.min = toISO(yearAgo);",
+        "      el.max = toISO(today);",
+        "    });",
+        "  })();",
         "  // The browser enforces the gates and the date range: a required checkbox that is",
         "  // not ticked, or a date outside min/max, stops submission with no script involved.",
         "  document.getElementById('suggest').addEventListener('submit', function (event) {",

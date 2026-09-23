@@ -86,7 +86,7 @@
 <input type="text" id="coordinates" name="coordinates">
 <label for="last_checked">When were you last there?</label>
 <p class="note">Places change, so a suggestion needs a date. Within the last year, please — anything older is a memory rather than a report.</p>
-<input type="date" id="last_checked" name="last_checked" min="2025-08-31" max="2026-08-31" required>
+<input type="date" id="last_checked" name="last_checked" class="js-date-bounds" required>
 <label for="why">Why is it here?</label>
 <p class="note">Up to 350 characters. Why does this place feel like a comfortable place to just ‘be’ in London?</p>
 <textarea id="why" name="why" maxlength="350" required></textarea>
@@ -157,6 +157,19 @@
 <textarea id="letter" readonly></textarea>
 </div>
 <script>
+  // Bounds computed from the visitor's own clock, not the generator's. A
+  // static file cannot know 'today' at every future viewing, so the range
+  // is set here instead of baked into the HTML at build time.
+  (function () {
+    var today = new Date();
+    var toISO = function (d) { return d.toISOString().slice(0, 10); };
+    var yearAgo = new Date(today);
+    yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+    document.querySelectorAll('.js-date-bounds').forEach(function (el) {
+      el.min = toISO(yearAgo);
+      el.max = toISO(today);
+    });
+  })();
   // The browser enforces the gates and the date range: a required checkbox that is
   // not ticked, or a date outside min/max, stops submission with no script involved.
   document.getElementById('suggest').addEventListener('submit', function (event) {
