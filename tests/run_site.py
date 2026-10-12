@@ -19,11 +19,14 @@ from scripts import build_site, schema as schema_mod
 FIX = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures", "valid.geojson")
 
 
-def build(places_path):
+def build(places_path, set_aside=None):
+    # Tests never read the real set-aside file, so they do not break when it grows.
+    if set_aside is None:
+        set_aside = os.path.join(tempfile.mkdtemp(prefix="aside-none-"), "none.json")
     out = os.path.join(tempfile.mkdtemp(prefix="site-test-"), "index.html")
     stdout, sys.stdout = sys.stdout, open(os.devnull, "w")
     try:
-        build_site.main(["--places", places_path, "--out", out])
+        build_site.main(["--places", places_path, "--set-aside", set_aside, "--out", out])
     finally:
         sys.stdout.close()
         sys.stdout = stdout
@@ -150,6 +153,21 @@ def main():
         failures.append("an empty corpus does not render an honest empty state")
     else:
         print("ok   an empty corpus says so plainly rather than rendering nothing")
+
+    aside = os.path.join(tempfile.mkdtemp(prefix="aside-"), "set_aside.json")
+    open(aside, "w").write('[{"name": "A place set aside", "visited": "2026-01-01", '
+                           '"note": "Not set up for this."}]')
+    with_aside = build(FIX, aside)
+    if "<details" not in with_aside or "<details open" in with_aside:
+        failures.append("set-aside places are not in a closed <details>")
+    elif "A place set aside" not in with_aside or "Not set up for this." not in with_aside:
+        failures.append("a set-aside entry did not render")
+    elif with_aside.count('<article class="place"') != page.count('<article class="place"'):
+        failures.append("set-aside entries are being counted as places")
+    elif "<details" in page:
+        failures.append("an empty set-aside list still renders a toggle")
+    else:
+        print("ok   set-aside places sit in a closed toggle, apart from the list and its count")
 
     if failures:
         print("\n%d site check(s) failed:\n" % len(failures))

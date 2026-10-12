@@ -29,6 +29,14 @@ pressed, so with scripting off you get every place and no filtering, which is
 the right way round. No map, no tiles, no fonts to fetch, nothing that reaches
 a third party — `tests/run_site.py` fails the build if any of that changes.
 
+## Places that did not fit
+
+`content/set_aside.json` holds places visited and set aside, each with a name,
+a date and a few sentences saying what was found. It sits outside `data/` and
+the schema on purpose: it feeds no filter and no validator, so it is not place
+data. It renders as a closed `<details>` under the list, so it is hidden by
+default and needs no JavaScript. Write reasons as facts about use, not verdicts.
+
 ## What exists
 
 `suggest.html` — the contribution form for people without a GitHub account.
