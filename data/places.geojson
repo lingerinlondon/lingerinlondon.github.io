@@ -131,6 +131,34 @@
         "why": "Chill Brutalist space with lots of laptop work, people catching up - great on a bright day, though not the most airy place.",
         "last_checked": "2026-09-23"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.172387,
+          51.496721
+        ]
+      },
+      "properties": {
+        "id": "osm:relation/29795",
+        "name": "Victoria and Albert Museum, South Kensington",
+        "seating": "soft",
+        "conversation": "possible",
+        "setting": "indoor",
+        "table": "plenty",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "donation",
+          "membership",
+          "ticketed_events",
+          "volunteering"
+        ],
+        "why": "The whole place is great to just sit and be, but there are also areas specifically set out to just exist in without having to buy anything or perform any preset action. The Learning Centre has sofas and benches and a designated lunchroom that is open and accessible to all. You can bring your own food and stay as long as you like.",
+        "last_checked": "2026-10-15"
+      }
     }
   ]
 }
