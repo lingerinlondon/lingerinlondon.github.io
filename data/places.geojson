@@ -137,6 +137,33 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          -0.133872,
+          51.525932
+        ]
+      },
+      "properties": {
+        "id": "osm:node/2617821322",
+        "spot": "Reading Room, 1st floor",
+        "name": "The Wellcome Collection",
+        "seating": "upright",
+        "conversation": "discouraged",
+        "setting": "indoor",
+        "table": "plenty",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "donation",
+          "ticketed_events"
+        ],
+        "why": "The Reading Room is full of chairs and tables, armchairs and sofas. It's there for people to read, study and just sit. Really comfortable, and mostly quiet.",
+        "last_checked": "2026-08-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           -0.172387,
           51.496721
         ]
