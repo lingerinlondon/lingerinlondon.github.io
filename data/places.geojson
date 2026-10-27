@@ -137,6 +137,30 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          -0.102873,
+          51.522888
+        ]
+      },
+      "properties": {
+        "id": "osm:way/1270615370",
+        "name": "The Cloister Garden",
+        "seating": "bench",
+        "conversation": "possible",
+        "setting": "outdoor",
+        "table": "a_few",
+        "support_options": [
+          "donation",
+          "volunteering"
+        ],
+        "why": "Beautiful medicinal garden with benches and wooden tables and chairs.",
+        "last_checked": "2026-09-05"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           -0.113962,
           51.506779
         ]
