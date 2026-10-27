@@ -137,6 +137,32 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          -0.113962,
+          51.506779
+        ]
+      },
+      "properties": {
+        "id": "osm:relation/2023676",
+        "name": "The National Theatre",
+        "seating": "soft",
+        "conversation": "possible",
+        "setting": "indoor",
+        "table": "a_few",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "donation",
+          "ticketed_events"
+        ],
+        "why": "Sitting by the Thames, emersed in culture, usually fairly quiet",
+        "last_checked": "2026-10-20"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           -0.133872,
           51.525932
         ]
