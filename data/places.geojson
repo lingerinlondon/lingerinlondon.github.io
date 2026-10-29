@@ -161,6 +161,34 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          -0.200369,
+          51.499914
+        ]
+      },
+      "properties": {
+        "id": "osm:way/640554759",
+        "name": "The Design Museum",
+        "seating": "bench",
+        "conversation": "possible",
+        "setting": "indoor",
+        "table": "a_few",
+        "support_options": [
+          "cafe_or_bar",
+          "shop",
+          "donation",
+          "membership",
+          "ticketed_events",
+          "volunteering"
+        ],
+        "why": "Fairly iconic building that offers a space to sit further out west. The central stairs have soft bench seats which are not bad. I think it was half term when I went, so slightly manic; probably usually more of a low hum of activity. The cafe in the same open space is pretty relaxed in terms of how long you stay too.",
+        "last_checked": "2026-10-29"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           -0.113962,
           51.506779
         ]
