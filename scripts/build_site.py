@@ -68,7 +68,7 @@ TITLE = "Linger in London"
 # string, and the marker is replaced with a link rather than being escaped.
 SCOPE_MARKER = "{scope}"
 STANDFIRST = (
-    "A crowwd-sourced list of places in 'central'{scope} London you can spend time in, doing what you want, without time or financial pressure. "
+    "A crowd-sourced list of places in 'central'{scope} London you can spend time in, doing what you want, without time or financial pressure. "
     "Use these places to study, read, do laptop work, take a call, listen to music, play chess, chill with friends, etc. "
     "Think of what London's public living rooms would be."
 )
